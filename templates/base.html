@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{%block title%} {%endblock %}</title>
+</head>
+<body>
+    <header>
+        <img src="{{ur_for('static', )}}" alt="">
+        <div class="user">
+            <img src="{{url_for('static', filename='img/~nameuser~.svg')}}" alt="">
+            <span>{{funcao}}: {{nameuser}}</span>
+        </div>
+    </header>
+    <main>
+        <aside class="dashboard">
+            {%if not dashboard_aberto%} 
+                <a href="?dashboard=1">
+                    <img src="{{url_for('static', filename='img/chevron-rigth.svg')}}" alt="">
+                </a>
+            {%endif%}
+            {%if dashboard_aberto%} 
+                <a href="?dashboard=0">
+                    <img src="{{url_for('static', filename='img/chevron-rigth.svg')}}" alt="">
+                </a>
+                <nav>
+                    <ul>
+                        {%block links%} {%endblock%}
+                    </ul>
+                </nav>
+            {%endif%}
+        </aside> 
+       <section>
+            <div class="infos">
+                {%block cards%}{%endblock}
+            </div>
+            <div class="pesquisa">
+                <form method="post" action="">
+                    <input type="text" placeholder="Pesquisar">
+                    <button class="search-btn">🔍</button>
+                </form>
+            </div>
+            {%if pesquisa%} 
+                
+            {%endif%}
+        </section>
+    </main>
+    <footer>
+
+    </footer>
+</body>
+</html>

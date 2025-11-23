@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+<body>
+    <form action="/cadastro" method="post">
+        <label for="user">USUÁRIO</label>
+        <input type="text" id="user" name="usuario"> 
+        <label for="pin">SENHA</label>
+        <input type="password" id="pin" name="senha">
+        <label for="tel">TELEFONE</label>
+        <input type="text" id="tel" name="telefone">
+        <label for="email">EMAIL</label>
+        <input type="text" id="email" name="email">
+        <label for="funcao">FUNÇÃO:</label>
+        <select id="funcao" name="funcao">
+            <option value="tutor">Tutor</option>
+            <option value="tutorado">Tutorado</option>
+            <option value="professor">Professor</option>
+            <option value="servidor">Servidor</option>
+        </select>
+        <button type="submit" class="botao">Cadastrar Usuário</button>
+        <span>Já tem uma conta? Entrar</span>
+    </form>
+</body>
+</html>
