@@ -40,5 +40,12 @@
         "senha": "tutorado_6",
         "telefone": "558496666-6666",
         "email": "tutorado6@ifrn.edu.br"
+    },
+    {
+        "user": "7",
+        "funcao": "professor",
+        "senha": "professor7",
+        "telefone": "558497777-7777",
+        "email": "professor7@ifrn.edu.br"
     }
 ]

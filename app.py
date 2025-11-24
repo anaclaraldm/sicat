@@ -36,6 +36,9 @@ def login_autenticacao():
         
     return render_template('cadastro.html')
 
+@app.route('/cadastrar')
+def cadastrar():
+    return render_template('cadastro.html')
 
 #cadastro
 @app.route('/cadastro', methods=['post'])
