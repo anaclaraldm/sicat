@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{url_for('static', filename='css/logincadastro.css')}}">
     <link rel="stylesheet" href="{{url_for('static', filename='css/global.css')}}">
+    
     <title>Login</title>
+    
 </head>
 <body>
     <svg xmlns="http://www.w3.org/2000/svg" width="789" height="472" viewBox="0 0 789 472" fill="none">
@@ -18,17 +20,23 @@
         </defs>
     </svg>
     <div class="frente cadastro column flex">
+    {% set mensagens = get_flashed_messages(with_categories=true) %}
+    {% if mensagens %}
+        {% for cat, m in mensagens %}
+            <div class="flash" role="alert"> {{m}} </div>
+        {% endfor %}
+    {% endif %}
         <h1>LOGIN</h1>
-        <form class="flex column" action="/login_autenticacao" method="post">
+        <form class="flex column" action="/autenticar" method="post">
             <div class="flex column label">
                 <div class="flex column label">
                     <div class="flex column">
-                        <label for="user">USUÁRIO</label>
-                        <input type="text" id="user" name="user"> 
+                        <label for="email">USUÁRIO</label>
+                        <input type="text" id="email" name="email"> 
                     </div>
                     <div class="flex column">
-                        <label for="pin">SENHA</label>
-                        <input type="password" id="pin" name="pin">
+                        <label for="senha">SENHA</label>
+                        <input type="password" id="senha" name="senha">
                     </div>
                 </div>
             </div>
@@ -36,7 +44,7 @@
             <div class="recuperacao flex">
                 <span><a href="">Esqueceu a senha?</a></span>
                 <span class="separador"></span>
-                <span><a href="/cadastrar">Criar uma conta</a></span></div>
+                <span><a href="/cadastro">Criar uma conta</a></span></div>
             </div>
         </form>
     </div>

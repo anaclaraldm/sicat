@@ -1,0 +1,7 @@
+FLASK_APP=app:app
+SECRET_KEY=sistemadeinformacaocontroleeagendamentodetutoria
+DB_USERNAME=psi2025_ana_31
+DB_PASSWORD=ana$#medeiros
+DB_HOST=fases.site
+DB_PORT=3308
+DB_DATABASE=pi2025_tutoria
