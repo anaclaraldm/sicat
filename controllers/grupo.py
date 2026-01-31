@@ -37,4 +37,9 @@ def entrar_grupo(id):
         flash('Você entrou no grupo!')
     return redirect('/grupos')
 
+@bp_grupo.route('/grupos/listar')
+@login_required
+def listar_grupos():
 
+    grupos = GrupoEstudos.query.all()
+    return render_template('grupos_listar.html', grupos=grupos)
