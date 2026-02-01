@@ -39,6 +39,18 @@ def index():
 def login():
     return render_template('login.html')
 
+@app.route('/tutor/home')
+
+def tutor_home():
+    return render_template('tutor/tutor_home.html')
+
+
+@app.route('/tutor/tutorias')
+@login_required
+def tutor_tutorias():
+    return render_template('tutor/tutor_tutorias.html')
+
+
 @app.route('/painel')
 @login_required
 def painel():

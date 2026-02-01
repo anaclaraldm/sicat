@@ -3,236 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Carrega o Tailwind CSS CDN -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}">
+
     <script src="https://cdn.tailwindcss.com"></script>
-    <title>{% block title %} Dashboard - SICAT {% endblock %}</title>
-    
+
+    <title>{% block title %}Tutor - Home | SICAT{% endblock %}</title>
+
     <style>
-        /* Define a fonte Inter como padrão */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f4f7f9; /* Fundo do corpo (Main Content) */
-        }
-        /* Estilo para a barra lateral fechada/aberta */
-        .sidebar-container {
-            transition: width 0.3s ease-in-out;
-            min-height: 100vh; /* Garante que a barra lateral cubra toda a altura */
-        }
-        /* Largura exata dos estados para replicar o design */
-        .aside-closed {
-            width: 80px; 
-            padding-top: 1rem; /* Padding superior para centralizar melhor os ícones */
-        }
-        .aside-open {
-            width: 250px; /* Um pouco mais estreito que o anterior, baseado na imagem */
-        }
-        /* Cor de hover dos links no sidebar (um azul muito claro) */
-        .nav-link:hover {
-            background-color: #e6f0ff; 
-            color: #002f6c;
-        }
-        .nav-link.active {
-            background-color: #e6f0ff;
-            color: #002f6c;
-            border-left: 4px solid #002f6c; /* Linha de destaque para o link ativo, se necessário */
-        }
-        .user-info {
-            line-height: 1.2;
-            font-size: 0.85rem;
+            background-color: #f4f7f9;
         }
     </style>
+
+    {% block css %}{% endblock %}
 </head>
 <body>
-    <div class="min-h-screen flex flex-col">
-        
-        <!-- HEADER (Barra Superior Azul Escura - Cor #002f6c) -->
-        <header class="flex items-center justify-between h-16 bg-[#002f6c] text-white shadow-lg px-4 md:px-6 flex-shrink-0">
-            <!-- Logo SICAT (Esquerda) -->
-            <div class="flex items-center space-x-3">
-                <div class="h-10 flex items-center justify-center">
-                    <img src="{{url_for('static', filename=('img/logo.svg'))}}" alt="">
-                </div>
-            </div>
-            
-            <!-- Informações do Usuário (Direita) -->
-            <div class="flex items-center space-x-3">
-                <!-- Imagem do Usuário (Placeholder) -->
-                <div class="h-10 w-10 rounded-full overflow-hidden bg-gray-300 flex-shrink-0">
-                    <!-- SVG Placeholder para a imagem do usuário -->
-                    <svg class="h-full w-full text-gray-600" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M24 20.993V24H0v-3.007a12 12 0 0112-12s12 7.007 12 12zM12 12c3.313 0 6-2.687 6-6s-2.687-6-6-6-6 2.687-6 6 2.687 6 6 6z"/>
-                    </svg>
-                </div>
-                <div class="user-info text-left">
-                    <!-- Variáveis Jinja para exibir as informações -->
-                    <p class="text-xs text-gray-300">{%block funcao%} {%endblock%}</p>
-                    <p class="font-semibold">{%block user%} {%endblock%}</p>
 
-                </div>
-            </div>
-        </header>
+<!-- NAVBAR SUPERIOR -->
+<header class="bg-[#0a3ea8] text-white shadow-md gradient-blue">
+    <div class="max-w-7xl mx-auto flex items-center justify-between h-16 px-6">
 
-        <!-- CONTEÚDO PRINCIPAL (SIDEBAR + SEÇÃO) -->
-        <main class="flex flex-grow">
-            
-            <!-- SIDEBAR (Menu Lateral) -->
-            <aside class="sidebar-container bg-white shadow-xl flex-shrink-0 
-                         {% if dashboard_aberto %} aside-open p-4 {% else %} aside-closed px-2 pt-4 {% endif %} 
-                         border-r border-gray-200 transition-all duration-300 ease-in-out">
-                
-                <!-- Botão de Fechar/Abrir Sidebar (No topo, alinhado à direita quando aberto) -->
-                <div class="flex mb-6 {% if dashboard_aberto %} justify-end {% else %} justify-center {% endif %}">
-                    <a href="?dashboard={% if dashboard_aberto %}0{% else %}1{% endif %}" 
-                       class="text-gray-500 hover:text-[#002f6c] transition-colors p-2 rounded-full hover:bg-gray-100">
-                        <!-- Ícone Chevron (Gira quando o dashboard está aberto) -->
-                        <svg class="w-5 h-5 transition-transform 
-                                   {% if dashboard_aberto %} rotate-180 {% endif %}" 
-                             fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                        </svg>
-                    </a>
-                </div>
-                
-                <!-- CONTEÚDO DA NAVEGAÇÃO -->
-                <nav class="space-y-2">
-                    
-                    {% if dashboard_aberto %}
-                        <!-- Estado ABERTO: Ícone e Texto -->
-                        {% set active_page = request.path %}
-                        
-                        <a href="/" class="nav-link flex items-center p-3 text-gray-700 font-medium rounded-lg transition-colors {% if active_page == '/' %} active {% endif %}">
-                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 3h7v9H3zM14 3h7v5h-7zM14 12h7v9h-7zM3 16h7v5H3z"/></svg>
-                            Dashboard
-                        </a>
-                        
-                        <a href="/tutores" class="nav-link flex items-center p-3 text-gray-700 font-medium rounded-lg transition-colors">
-                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
-                            Tutores
-                        </a>
-                        
-                        <a href="/tutorados" class="nav-link flex items-center p-3 text-gray-700 font-medium rounded-lg transition-colors">
-                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/></svg>
-                            Tutorados
-                        </a>
-                        
-                        <a href="/relatorios" class="nav-link flex items-center p-3 text-gray-700 font-medium rounded-lg transition-colors">
-                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="18" rx="2" ry="2"/><path d="M16 2v4M8 2v4M7 10h10"/></svg>
-                            Relatórios
-                        </a>
-                        
-                        <a href="/comunicacao" class="nav-link flex items-center p-3 text-gray-700 font-medium rounded-lg transition-colors">
-                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-                            Comunicação
-                        </a>
-                        
-                        {% block links %} 
-                            <!-- Links Dinâmicos adicionados por templates filhos -->
-                        {% endblock %}
-                        
-                        <!-- Link Sair (Sempre no final) -->
-                        <a href="/logout" class="flex items-center p-3 text-red-600 font-medium rounded-lg transition-colors mt-6">
-                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M11 16l-4-4m0 0l4-4m-4 4h14m-1 8h-10a2 2 0 01-2-2v-4h2v4h10V6H7V2a2 2 0 012-2h10a2 2 0 012 2v16a2 2 0 01-2 2z"/></svg>
-                            Sair
-                        </a>
-                        
-                    {% else %}
-                        <!-- Estado FECHADO: Apenas Ícones Centralizados -->
-                        <div class="flex flex-col items-center space-y-4">
-                            <a href="/" class="p-2 text-gray-500 hover:text-[#002f6c] hover:bg-gray-100 rounded-lg">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 3h7v9H3zM14 3h7v5h-7zM14 12h7v9h-7zM3 16h7v5H3z"/></svg>
-                            </a>
-                            <a href="/tutores" class="p-2 text-gray-500 hover:text-[#002f6c] hover:bg-gray-100 rounded-lg">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
-                            </a>
-                            <a href="/tutorados" class="p-2 text-gray-500 hover:text-[#002f6c] hover:bg-gray-100 rounded-lg">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/></svg>
-                            </a>
-                            <a href="/relatorios" class="p-2 text-gray-500 hover:text-[#002f6c] hover:bg-gray-100 rounded-lg">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="18" rx="2" ry="2"/><path d="M16 2v4M8 2v4M7 10h10"/></svg>
-                            </a>
-                            <a href="/comunicacao" class="p-2 text-gray-500 hover:text-[#002f6c] hover:bg-gray-100 rounded-lg">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-                            </a>
-                            <a href="/logout" class="p-2 text-red-600 hover:bg-red-50 rounded-lg mt-6">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M11 16l-4-4m0 0l4-4m-4 4h14m-1 8h-10a2 2 0 01-2-2v-4h2v4h10V6H7V2a2 2 0 012-2h10a2 2 0 012 2v16a2 2 0 01-2 2z"/></svg>
-                            </a>
-                        </div>
-                    {% endif %}
-                </nav>
-            </aside> 
-            
-            <!-- SEÇÃO DE CONTEÚDO PRINCIPAL -->
-            <section class="flex-grow p-4 md:p-8 space-y-6">
-                
-                <!-- Bloco de Cards (Estatísticas - 4 colunas) -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        <!-- Cards de estatísticas serão inseridos aqui (Exemplo: Usuários, Tutores, Alunos, Média) -->
-                        <div class="bg-white p-6 rounded-lg shadow-md border-t-4 border-[#002f6c]">
-                             <div class="flex justify-between items-center mb-2">
-                                <p class="text-gray-500 text-sm">{% block info1 %} {% endblock %}</p>
-                                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h7"/></svg>
-                             </div>
-                             <h2 class="text-3xl font-bold text-gray-800">{% block info11 %} {% endblock %}</h2>
-                        </div>
-                        <div class="bg-white p-6 rounded-lg shadow-md border-t-4 border-[#002f6c]">
-                             <div class="flex justify-between items-center mb-2">
-                                <p class="text-gray-500 text-sm">{% block info2 %} {% endblock %}</p>
-                                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h7"/></svg>
-                             </div>
-                             <h2 class="text-3xl font-bold text-gray-800">{% block info21 %} {% endblock %}</h2>
-                        </div>
-                        <div class="bg-white p-6 rounded-lg shadow-md border-t-4 border-[#002f6c]">
-                             <div class="flex justify-between items-center mb-2">
-                                <p class="text-gray-500 text-sm">{% block info3 %} {% endblock %}</p>
-                                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h7"/></svg>
-                             </div>
-                             <h2 class="text-3xl font-bold text-gray-800">{% block info31 %} {% endblock %}</h2>
-                        </div>
-                        <div class="bg-white p-6 rounded-lg shadow-md border-t-4 border-[#002f6c]">
-                             <div class="flex justify-between items-center mb-2">
-                                <p class="text-gray-500 text-sm">{% block info4 %} {% endblock %}</p>
-                                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h7"/></svg>
-                             </div>
-                             <h2 class="text-3xl font-bold text-gray-800">{% block info41 %} {% endblock %}</h2>
-                        </div>
-                </div>
-                
-                <!-- Bloco de Pesquisa, Filtro e Botão -->
-                <div class="flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-4">
-                    <!-- Pesquisa (Ocupa o máximo de espaço) -->
-                    <div class="flex-grow w-full sm:w-auto">
-                        <form method="get" action="" class="flex bg-white border border-gray-300 rounded-full overflow-hidden shadow-sm">
-                            <input type="text" name="q" placeholder="Pesquisar..." class="flex-grow p-3 text-gray-700 focus:outline-none border-none bg-transparent" />
-                            <button type="submit" class="p-3 bg-gray-50 text-gray-600 hover:bg-gray-100 transition-colors">
-                                🔍
-                            </button>
-                        </form>
-                    </div>
+        <!-- Logo -->
+        <div class="flex items-center gap-2">
+            <img src="{{ url_for('static', filename='img/logo.svg') }}" class="h-8" alt="SICAT">
+        </div>
 
-                    <!-- Filtro (Dropdown) -->
-                    <select class="campo p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-[#002f6c] focus:border-[#002f6c] flex-shrink-0">
-                        {% block opcoes %} {% endblock %}
-                    </select>
+        <!-- Menu -->
+        <nav class="flex items-center gap-6 text-sm font-medium">
+            <a href="/tutor/home" class="nav-link {% if request.path == '/tutor/home' %}active{% endif %}">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="17" viewBox="0 0 16 17" fill="none"> 
+                <path d="M2 15.0571H5V10.2C5 9.92476 5.096 9.69421 5.288 9.50834C5.48 9.32247 5.71733 9.22922 6 9.22857H10C10.2833 9.22857 10.521 9.32183 10.713 9.50834C10.905 9.69485 11.0007 9.92541 11 10.2V15.0571H14V6.31428L8 1.94286L2 6.31428V15.0571ZM0 15.0571V6.31428C0 6.00667 0.0709998 5.71524 0.213 5.44C0.355 5.16476 0.550667 4.93809 0.8 4.76L6.8 0.388571C7.15 0.129524 7.55 0 8 0C8.45 0 8.85 0.129524 9.2 0.388571L15.2 4.76C15.45 4.93809 15.646 5.16476 15.788 5.44C15.93 5.71524 16.0007 6.00667 16 6.31428V15.0571C16 15.5914 15.804 16.049 15.412 16.4298C15.02 16.8106 14.5493 17.0006 14 17H10C9.71666 17 9.47933 16.9067 9.288 16.7202C9.09666 16.5337 9.00066 16.3032 9 16.0286V11.1714H7V16.0286C7 16.3038 6.904 16.5347 6.712 16.7212C6.52 16.9077 6.28267 17.0006 6 17H2C1.45 17 0.979333 16.8099 0.588 16.4298C0.196666 16.0496 0.000666666 15.5921 0 15.0571Z" fill="white"/>
+                </svg> Home
+            </a>
 
-                    <!-- Botão Novo Tutor (Cor azul claro) -->
-                    <button class="bg-[#3498db] text-white p-3 rounded-lg shadow-md hover:bg-[#2980b9] transition-colors flex items-center space-x-1 flex-shrink-0">
-                        <span class="font-medium">Novo tutor</span>
-                        <!-- Ícone de adição -->
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 4v16m-8-8h16"/></svg>
-                    </button>
-                </div>
+            <a href="/tutor/tutorias" class="nav-link {% if request.path == '/tutor/tutorias' %}active{% endif %}"> 
+                <svg xmlns="http://www.w3.org/2000/svg"width="18" height="17"viewBox="0 0 18 17" fill="none"class="w-4 h-4">
+                <path d="M6.29448 16.1972L0 8.5195L1.57362 6.60009L6.29448 12.3583L16.4264 0L18 1.91941L6.29448 16.1972Z"fill="white"/>
+                </svg> Tutorias Marcadas</a>
 
-                {% block reusltados %}
-                {% endblock %}
-                
-            </section>
-        </main>
-        
-        <!-- FOOTER (Rodapé - Fundo cinza claro) -->
-        <footer class="h-10 bg-gray-100 text-gray-600 flex items-center justify-center text-sm border-t border-gray-200 flex-shrink-0">
-             © 2025 SICAT. Todos os direitos reservados.
-        </footer>
+            <a href="/tutor/pendentes" class="nav-link {% if request.path == '/tutor/pendentes' %}active{% endif %}" >
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 22 22" fill="none">
+                <path d="M7.33329 18.3333H14.6666V15.5833C14.6666 14.575 14.3076 13.7118 13.5895 12.9938C12.8715 12.2757 12.0083 11.9167 11 11.9167C9.99163 11.9167 9.12843 12.2757 8.41038 12.9938C7.69232 13.7118 7.33329 14.575 7.33329 15.5833V18.3333ZM11 10.0833C12.0083 10.0833 12.8715 9.72431 13.5895 9.00625C14.3076 8.2882 14.6666 7.425 14.6666 6.41667V3.66667H7.33329V6.41667C7.33329 7.425 7.69232 8.2882 8.41038 9.00625C9.12843 9.72431 9.99163 10.0833 11 10.0833ZM3.66663 20.1667V18.3333H5.49996V15.5833C5.49996 14.6514 5.71782 13.7766 6.15354 12.9589C6.58926 12.1413 7.1964 11.4883 7.97496 11C7.19579 10.5111 6.58865 9.85814 6.15354 9.04109C5.71843 8.22403 5.50057 7.34923 5.49996 6.41667V3.66667H3.66663V1.83334H18.3333V3.66667H16.5V6.41667C16.5 7.34861 16.2824 8.22342 15.8473 9.04109C15.4122 9.85875 14.8047 10.5117 14.025 11C14.8041 11.4889 15.4116 12.1422 15.8473 12.9598C16.283 13.7775 16.5006 14.652 16.5 15.5833V18.3333H18.3333V20.1667H3.66663Z" fill="white"/>
+                </svg> Tutorias Pendentes</a>
+
+            <a href="/tutor/historico" class="nav-link {% if request.path == '/tutor/historico' %}active{% endif %}">
+                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30" fill="none">
+                <path d="M13.0263 22.1053C10.9079 22.1053 9.03328 21.4623 7.40243 20.1765C5.77158 18.8906 4.71237 17.247 4.2248 15.2456C4.15755 14.9934 4.20799 14.7624 4.37612 14.5526C4.54424 14.3428 4.77122 14.2207 5.05704 14.1864C5.32604 14.1528 5.56983 14.2032 5.7884 14.3377C6.00696 14.4722 6.15828 14.674 6.24234 14.943C6.64585 16.4561 7.47809 17.6919 8.73905 18.6502C10 19.6085 11.4291 20.0877 13.0263 20.0877C14.9934 20.0877 16.6623 19.4028 18.0329 18.0328C19.4035 16.6629 20.0884 14.9941 20.0877 13.0263C20.0871 11.0585 19.4021 9.39002 18.0329 8.02078C16.6636 6.65155 14.9948 5.96625 13.0263 5.96491C11.8662 5.96491 10.7818 6.23391 9.77304 6.77193C8.76427 7.30994 7.91522 8.0497 7.2259 8.99122H8.99125C9.27707 8.99122 9.51682 9.08806 9.7105 9.28175C9.90419 9.47543 10.0007 9.71485 10 9.99999C9.99935 10.2851 9.9025 10.5249 9.70949 10.7192C9.51648 10.9136 9.27707 11.0101 8.99125 11.0088H4.95616C4.67034 11.0088 4.43093 10.9119 4.23791 10.7182C4.0449 10.5246 3.94806 10.2851 3.94739 9.99999V5.96491C3.94739 5.67909 4.04423 5.43967 4.23791 5.24666C4.4316 5.05365 4.67101 4.95681 4.95616 4.95614C5.24131 4.95546 5.48106 5.05231 5.67541 5.24666C5.86977 5.44102 5.96628 5.68043 5.96493 5.96491V7.32675C6.82239 6.25073 7.86916 5.41849 9.10524 4.83004C10.3413 4.24159 11.6484 3.94736 13.0263 3.94736C14.2873 3.94736 15.4686 4.18712 16.5701 4.66662C17.6717 5.14612 18.6301 5.79308 19.4451 6.6075C20.2602 7.42191 20.9075 8.38024 21.387 9.48249C21.8665 10.5847 22.106 11.766 22.1053 13.0263C22.1046 14.2866 21.8652 15.4679 21.387 16.5701C20.9089 17.6724 20.2616 18.6307 19.4451 19.4451C18.6287 20.2595 17.6704 20.9068 16.5701 21.387C15.4699 21.8672 14.2886 22.1066 13.0263 22.1053ZM14.0351 12.6228L16.557 15.1447C16.742 15.3297 16.8344 15.5651 16.8344 15.8509C16.8344 16.1367 16.742 16.3721 16.557 16.557C16.3721 16.742 16.1367 16.8344 15.8509 16.8344C15.5651 16.8344 15.3297 16.742 15.1448 16.557L12.3202 13.7324C12.2193 13.6316 12.1437 13.5183 12.0932 13.3925C12.0428 13.2667 12.0176 13.1363 12.0176 13.0011V8.99122C12.0176 8.7054 12.1144 8.46599 12.3081 8.27298C12.5018 8.07997 12.7412 7.98312 13.0263 7.98245C13.3115 7.98178 13.5512 8.07862 13.7456 8.27298C13.9399 8.46733 14.0365 8.70675 14.0351 8.99122V12.6228Z" fill="white"/>
+                </svg> Histórico</a>
+
+            <a href="/tutor/comunicacao" class="nav-link {% if request.path == '/tutor/comunicacao' %}active{% endif %}">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="24" viewBox="0 0 22 24" fill="none">
+                <path d="M6.6 10.4775C6.91167 10.4775 7.1731 10.3658 7.3843 10.1423C7.5955 9.91873 7.70073 9.64244 7.7 9.31336C7.69927 8.98429 7.59367 8.708 7.3832 8.48448C7.17273 8.26095 6.91167 8.14919 6.6 8.14919C6.28833 8.14919 6.02727 8.26095 5.8168 8.48448C5.60633 8.708 5.50073 8.98429 5.5 9.31336C5.49927 9.64244 5.60487 9.91912 5.8168 10.1434C6.02873 10.3677 6.2898 10.4791 6.6 10.4775ZM11 10.4775C11.3117 10.4775 11.5731 10.3658 11.7843 10.1423C11.9955 9.91873 12.1007 9.64244 12.1 9.31336C12.0993 8.98429 11.9937 8.708 11.7832 8.48448C11.5727 8.26095 11.3117 8.14919 11 8.14919C10.6883 8.14919 10.4273 8.26095 10.2168 8.48448C10.0063 8.708 9.90073 8.98429 9.9 9.31336C9.89927 9.64244 10.0049 9.91912 10.2168 10.1434C10.4287 10.3677 10.6898 10.4791 11 10.4775ZM15.4 10.4775C15.7117 10.4775 15.9731 10.3658 16.1843 10.1423C16.3955 9.91873 16.5007 9.64244 16.5 9.31336C16.4993 8.98429 16.3937 8.708 16.1832 8.48448C15.9727 8.26095 15.7117 8.14919 15.4 8.14919C15.0883 8.14919 14.8273 8.26095 14.6168 8.48448C14.4063 8.708 14.3007 8.98429 14.3 9.31336C14.2993 9.64244 14.4049 9.91912 14.6168 10.1434C14.8287 10.3677 15.0898 10.4791 15.4 10.4775ZM0 23.2834V2.32834C0 1.68805 0.2156 1.14011 0.6468 0.684532C1.078 0.228954 1.59573 0.000776114 2.2 0H19.8C20.405 0 20.9231 0.228178 21.3543 0.684532C21.7855 1.14089 22.0007 1.68882 22 2.32834V16.2984C22 16.9387 21.7848 17.487 21.3543 17.9434C20.9238 18.3997 20.4057 18.6275 19.8 18.6267H4.4L0 23.2834ZM3.465 16.2984H19.8V2.32834H2.2V17.6081L3.465 16.2984Z" fill="#FEFEFE"/>
+                </svg> Comunicação</a>
+
+            <a href="/tutor/perfil" class="nav-link {% if request.path == '/tutor/perfil' %}active{% endif %}">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="24" viewBox="0 0 22 24" fill="none">
+                <path d="M6.6 10.4775C6.91167 10.4775 7.1731 10.3658 7.3843 10.1423C7.5955 9.91873 7.70073 9.64244 7.7 9.31336C7.69927 8.98429 7.59367 8.708 7.3832 8.48448C7.17273 8.26095 6.91167 8.14919 6.6 8.14919C6.28833 8.14919 6.02727 8.26095 5.8168 8.48448C5.60633 8.708 5.50073 8.98429 5.5 9.31336C5.49927 9.64244 5.60487 9.91912 5.8168 10.1434C6.02873 10.3677 6.2898 10.4791 6.6 10.4775ZM11 10.4775C11.3117 10.4775 11.5731 10.3658 11.7843 10.1423C11.9955 9.91873 12.1007 9.64244 12.1 9.31336C12.0993 8.98429 11.9937 8.708 11.7832 8.48448C11.5727 8.26095 11.3117 8.14919 11 8.14919C10.6883 8.14919 10.4273 8.26095 10.2168 8.48448C10.0063 8.708 9.90073 8.98429 9.9 9.31336C9.89927 9.64244 10.0049 9.91912 10.2168 10.1434C10.4287 10.3677 10.6898 10.4791 11 10.4775ZM15.4 10.4775C15.7117 10.4775 15.9731 10.3658 16.1843 10.1423C16.3955 9.91873 16.5007 9.64244 16.5 9.31336C16.4993 8.98429 16.3937 8.708 16.1832 8.48448C15.9727 8.26095 15.7117 8.14919 15.4 8.14919C15.0883 8.14919 14.8273 8.26095 14.6168 8.48448C14.4063 8.708 14.3007 8.98429 14.3 9.31336C14.2993 9.64244 14.4049 9.91912 14.6168 10.1434C14.8287 10.3677 15.0898 10.4791 15.4 10.4775ZM0 23.2834V2.32834C0 1.68805 0.2156 1.14011 0.6468 0.684532C1.078 0.228954 1.59573 0.000776114 2.2 0H19.8C20.405 0 20.9231 0.228178 21.3543 0.684532C21.7855 1.14089 22.0007 1.68882 22 2.32834V16.2984C22 16.9387 21.7848 17.487 21.3543 17.9434C20.9238 18.3997 20.4057 18.6275 19.8 18.6267H4.4L0 23.2834ZM3.465 16.2984H19.8V2.32834H2.2V17.6081L3.465 16.2984Z" fill="#FEFEFE"/>
+                </svg> Mudar Perfil</a>
+        </nav>
+
+        <!-- Usuário -->
+        <div class="flex items-center gap-2">
+            <img class="w-8 h-8 rounded-full bg-gray-300" alt="">
+            <span class="text-sm font-semibold">
+                {% block user %}{% endblock %}
+            </span>
+        </div>
     </div>
+</header>
+
+<!-- CONTEÚDO PRINCIPAL -->
+<main class="max-w-7xl mx-auto px-6 py-8">
+
+    {% block content %}{% endblock %}
+
+</main>
+
 </body>
 </html>

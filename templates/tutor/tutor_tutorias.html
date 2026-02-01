@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    {% block head %}
+    <meta charset="UTF-8">
+    <title>Tutor - Tutorias Marcadas</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='tutor_tutorias.css') }}">
+    {% endblock %}
+</head>
+<body>
+
+{% block header %}
+<header class="topbar">
+    <div class="logo">SICAT</div>
+    <nav>
+        <a href="/tutor/home">Home</a>
+        <a class="active" href="/tutor/tutorias">Tutorias Marcadas</a>
+        <a href="#">Solicitações</a>
+        <a href="#">Histórico</a>
+        <a href="#">Comunicação</a>
+    </nav>
+</header>
+{% endblock %}
+
+{% block content %}
+<main class="container">
+
+    <section class="empty-state">
+        <h2>Tutorias marcadas</h2>
+        <p>Você não tem atividades de tutorias marcadas</p>
+
+        <div class="empty-actions">
+            <button class="btn-purple">Ver solicitações de sessão de tutoria</button>
+            <button class="btn-blue">Nova atividade de tutoria +</button>
+        </div>
+    </section>
+
+</main>
+{% endblock %}
+
+</body>
+</html>
