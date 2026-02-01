@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - trabalhandocomflask
 
 permissions:
   contents: read

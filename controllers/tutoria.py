@@ -10,7 +10,7 @@ def listar_sessoes():
     sessoes = SessaoTutoria.query.all()
     return render_template('sessao_tutoria_listar.html', sessoes=sessoes)
 
-@bp_tutoria.route('/sessoes/novo', methods=['GET', 'POST'])
+@bp_tutoria.route('/sessoes/cadastrar', methods=['GET', 'POST'])
 @login_required
 def criar_sessao():
     if current_user.funcao != 'tutor':
@@ -50,7 +50,7 @@ def editar_sessao(id):
     flash('Sessão atualizada!')
     return redirect('/sessoes')
 
-@bp_tutoria.route('/sessoes/delete/<int:id>', methods=['GET', 'POST'])
+@bp_tutoria.route('/sessoes/deletar/<int:id>', methods=['GET', 'POST'])
 @login_required
 def deletar_sessao(id):
     sessao = SessaoTutoria.query.get(id)
@@ -123,3 +123,29 @@ def sessoes_filtro():
 
     sessoes = query.all()
     return render_template('sessao_tutoria_listar.html', sessoes=sessoes)
+
+@bp_tutoria.route('/tutores/perfil/<int:id>')
+@login_required
+def perfil_tutor(id):
+
+    tutor = Tutor.query.get_or_404(id)
+    return render_template('tutor_perfil.html', tutor=tutor)
+
+
+
+@bp_tutoria.route('/sessoes/historico')
+@login_required
+def listar_historico():
+    if current_user.funcao == 'servidor':
+        sessoes = SessaoTutoria.query.all()
+        titulo = "Histórico Geral de Tutorias"
+    
+    elif current_user.funcao == 'aluno':
+        sessoes = [s for s in SessaoTutoria.query.all() if current_user in s.alunos]
+        titulo = "Meus Atendimentos Realizados"
+    
+    else:
+        flash("Acesso não autorizado para esta função.")
+        return redirect('/painel')
+
+    return render_template('sessao_tutoria_listar.html', sessoes=sessoes, titulo=titulo, modo='historico')
