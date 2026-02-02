@@ -1,11 +1,11 @@
 # SICAT
 
 ## Descrição
-O SICAT (Sistema Integrado de Controle e Acompanhamento de Tutoria) é um sistema web desenvolvido com o objetivo de organizar, centralizar e otimizar a gestão das atividades de tutoria em instituições públicas de ensino.
+O SICAT (Sistema Integrado de Controle e Agendamento de Tutoria) é um sistema web desenvolvido com o objetivo de organizar, centralizar e otimizar a gestão das atividades de tutoria em instituições públicas de ensino(IFs). 
 
 Atualmente, o acompanhamento das tutorias ocorre de forma descentralizada, utilizando planilhas e comunicação manual por e-mails, o que dificulta o controle das atividades, o registro de atendimentos e o acompanhamento do desempenho dos alunos. Essa falta de integração gera retrabalho, falhas na comunicação e baixa eficiência administrativa.
 
-O SICAT propõe a centralização dessas informações em uma única plataforma, permitindo o cadastro padronizado de alunos, tutores e coordenadores, o agendamento de atendimentos, o controle de frequência e o registro das atividades realizadas. Além disso, o sistema contará com ferramentas de comunicação, como chat interno e notificações, facilitando a interação entre tutores, alunos e coordenação.
+O SICAT propõe a centralização dessas informações em uma única plataforma, permitindo o cadastro padronizado de alunos, tutores e coordenadores, o agendamento de atendimentos, o controle de frequência e o registro das atividades realizadas. 
 
 Com a implantação do sistema, espera-se melhorar a organização das atividades de tutoria, tornar o acompanhamento mais eficiente e contribuir para a melhoria do desempenho acadêmico dos alunos, além de apoiar a tomada de decisões por meio da geração automática de relatórios periódicos.
 
