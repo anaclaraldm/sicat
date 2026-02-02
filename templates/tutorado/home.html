@@ -1,0 +1,106 @@
+{% extends "tutorado/basetutorado.html" %}
+
+{% block title %}Tutor - Home{% endblock %}
+
+{% block user %}
+Tutor(a): Ana Clara Lima
+{% endblock %}
+
+{% block content %}
+
+<!-- CARD + ILUSTRAÇÃO -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center mb-10">
+
+    <div class="bg-white border-[3px] border-blue-900 rounded-[32px] p-8 text-center shadow-md w-full max-w-xl">
+
+    <!-- Título com ícone -->
+    <div class="flex items-center gap-2 text-gray-700 mb-6 test">
+        <svg xmlns="http://www.w3.org/2000/svg"
+             width="22" height="22"
+             viewBox="0 0 24 24"
+             fill="none"
+             stroke="#960176"
+             stroke-width="2"
+             stroke-linecap="round"
+             stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+        </svg>
+
+        <span class="text-base font-medium">Tutorias</span>
+    </div>
+
+    <!-- Conteúdo -->
+    <p class="text-lg text-blue-900 mb-4">Você participou de</p>
+
+    <p class="text-6xl font-bold text-blue-600 mb-4">5</p>
+
+    <p class="text-lg text-blue-900">
+        atividades de tutorias este mês!
+    </p>
+</div>
+
+    <img src="{{ url_for('static', filename='img/takingnotes.svg') }}" class="w-full max-w-md mx-auto">
+</div>
+
+<!-- SAUDAÇÃO -->
+<h2 class="text-xl mb-6">
+    Olá, <span class="purple font-semibold">Ana</span>
+</h2>
+
+<section class="mb-8">
+    <h3 class="font-semibold mb-4">Solicitações</h3>
+
+    <div class="bg-gray-100 rounded-full px-4 py-3 flex items-center justify-between mb-2">
+
+    <!-- Ícone + texto -->
+    <div class="flex items-center gap-2 text-sm">
+        <svg xmlns="http://www.w3.org/2000/svg"
+             width="12" height="12"
+             viewBox="0 0 12 12" fill="none">
+            <circle cx="6" cy="6" r="6" fill="#1D5B00"/>
+        </svg>
+
+        <span>Gabryela solicitou uma tutoria para 01/02/2026</span>
+    </div>
+
+    <!-- Imagem -->
+    <img src="{{ url_for('static', filename='img/eye.png') }}"
+         alt="Detalhes"
+         class="w-4 h-4 cursor-pointer">
+
+</div>
+
+</section>
+
+<section class="mb-8">
+    <h3 class="font-semibold mb-4">Avisos</h3>
+
+    <div class="bg-blue-100 rounded-full px-4 py-3 flex items-center justify-between mb-2">
+
+    <!-- Ícone + texto -->
+    <div class="flex items-center gap-2 text-sm">
+        <svg xmlns="http://www.w3.org/2000/svg"
+             width="12" height="12"
+             viewBox="0 0 12 12" fill="none">
+            <circle cx="6" cy="6" r="6" fill="#1D5B00"/>
+        </svg>
+
+        <span>Você tem uma sessão de tutoria marcada para o dia 21/20/2026</span>
+    </div>
+
+    <!-- Imagem -->
+    <img src="{{ url_for('static', filename='img/eye.png') }}"
+         alt="Detalhes"
+         class="w-4 h-4 cursor-pointer">
+
+</div>
+
+</section>
+
+<a href="{{ url_for('tutorado_marcar') }}" class="btn-nova">
+    Marcar uma sessão de tutoria +
+</a>
+
+
+{% endblock %}

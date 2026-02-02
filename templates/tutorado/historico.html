@@ -1,0 +1,35 @@
+{% extends "tutorado/basetutorado.html" %}
+
+{% block titulo_sessao %}
+Histórico - Atividade de tutoria
+{% endblock %}
+
+{% block user %}
+Tutor(a): Ana Clara Lima
+{% endblock %}
+
+{% block content %}
+
+<div class="bg-gray-100 rounded-full px-4 py-3 flex items-center justify-between mb-2">
+
+    <!-- Ícone + texto -->
+    <div class="flex items-center gap-2 text-sm">
+        <svg xmlns="http://www.w3.org/2000/svg"
+             width="12" height="12"
+             viewBox="0 0 12 12" fill="none">
+            <circle cx="6" cy="6" r="6" fill="#1D5B00"/>
+        </svg>
+
+        <span>Atividade de tutora realizada: dia  21/10/2026. Título: sessão de tutoria...</span>
+    </div>
+
+    <!-- Imagem -->
+    <img src="{{ url_for('static', filename='img/eye.png') }}"
+         alt="Detalhes"
+         class="w-4 h-4 cursor-pointer" onclick="abrirModalVisualizar()">
+
+</div>
+
+
+
+{% endblock %}

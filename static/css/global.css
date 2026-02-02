@@ -1,3 +1,115 @@
 .flex{
     display: flex;
 }
+
+.gradient-blue {
+    background: linear-gradient(
+        90deg,
+        #0034AF 27.99%,
+        #00257C 61.21%,
+        #001649 100%
+    );
+    filter: drop-shadow(0 2px 20px rgba(0, 0, 0, 0.25));
+}
+
+.nav-link {
+    padding: 0.25rem 0.75rem; /* px-3 py-1 */
+    border-radius: 9999px;   /* rounded-full */
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    transition: background 0.3s ease;
+}
+
+/* Hover */
+.nav-link:hover {
+    background: linear-gradient(
+        270deg,
+        rgba(150, 1, 118, 0.90) 9%,
+        rgba(4, 45, 136, 0.90) 100%
+    );
+}
+
+/* Link ativo */
+.nav-link.active {
+    background: linear-gradient(
+        270deg,
+        rgba(150, 1, 118, 0.90) 9%,
+        rgba(4, 45, 136, 0.90) 100%
+    );
+}
+
+.purple{
+    color:#84005E;
+}
+
+.titulo-sessao {
+    color: #84005E;
+    font-family: 'Inter', sans-serif;
+    font-style: normal;
+    font-weight: 700;
+    font-size:23px;
+    line-height: normal;
+    margin-bottom: 1.5rem;
+}
+
+
+/* Container */
+.filtro-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    align-items: center;
+    margin-bottom: 32px;
+}
+
+/* Input de pesquisa */
+.input-pesquisa {
+    flex: 1;
+    min-width: 200px;
+    padding: 10px 20px;
+    border-radius: 25.5px;
+    border: 2px solid #960176;
+    background: rgba(217, 217, 217, 0);
+    outline: none;
+    font-size: 14px;
+}
+
+/* Select filtro */
+.select-filtro {
+    padding: 10px 20px;
+    border-radius: 25.5px;
+    border: 2px solid #960176;
+    background: rgba(217, 217, 217, 0);
+    outline: none;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+/* Botão */
+.btn-nova {
+    padding: 10px 24px;
+    border-radius: 9px;
+    background: linear-gradient(90deg, #0051EF 0%, #002E89 100%);
+    color: white;
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.btn-nova:hover {
+    opacity: 0.9;
+}
+
+.input-perfil {
+    background: #f3f3f3;
+    border-radius: 14px;
+    padding: 12px 16px;
+    margin-top: 4px;
+}
+
+
+

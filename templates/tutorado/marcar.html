@@ -1,0 +1,172 @@
+{% extends "tutorado/basetutorado.html" %}
+
+{% block title %}Aluno - Marcar Tutoria{% endblock %}
+
+{% block user %}
+Aluno: Ana Clara
+{% endblock %}
+
+{% block titulo_sessao %}
+Marcar uma sessão de tutoria
+{% endblock %}
+
+{% block content %}
+
+
+<!-- FORMULÁRIO -->
+<div class="bg-white border-2 border-blue-900 rounded-[32px] p-8 shadow-md max-w-4xl">
+
+    <!-- Tipo de matéria -->
+    <div class="mb-6">
+        <label class="block font-medium mb-2">
+            Qual o tipo de matéria deseja escolher?
+        </label>
+
+        <select id="tipoMateria"
+                onchange="atualizarDisciplinas()"
+                class="w-full px-4 py-3 rounded-full bg-gray-100 focus:outline-none">
+            <option value="">Selecione</option>
+            <option value="propedeutica">Propedêutica</option>
+            <option value="tecnica">Técnica</option>
+        </select>
+    </div>
+
+    <!-- Disciplina -->
+    <div class="mb-6">
+        <label class="block font-medium mb-2">
+            Selecione a disciplina:
+        </label>
+
+        <select id="disciplina"
+                class="w-full px-4 py-3 rounded-full bg-gray-100 focus:outline-none">
+            <option value="">Selecione o tipo de matéria primeiro</option>
+        </select>
+    </div>
+
+    <!-- PESQUISA DE TUTOR -->
+    <div class="mt-10 flex justify-end">
+        <button
+            class="px-8 py-3 rounded-full bg-gray-200 text-gray-700 font-medium hover:bg-gray-300 transition">
+            Pesquisar
+        </button>
+    </div>
+
+
+    <!-- INFORMAÇÕES DO TUTOR -->
+    <h3 class="text-lg font-semibold text-blue-600 mb-4">
+        Informações do tutor
+    </h3>
+
+    <div class="bg-gray-100 rounded-[24px] p-6 flex gap-6 items-center mb-8">
+
+        <!-- Avatar -->
+        <img src="{{ url_for('static', filename='img/tutor.jpg') }}"
+             class="w-24 h-24 rounded-full border-4 border-blue-600 object-cover">
+
+        <!-- Dados -->
+        <div class="flex-1 space-y-3">
+            <span class="text-xs text-gray-400 ml-2">Nome do tutor</span>
+            <input type="text"
+                   value="Ana Clara Lima"
+                   readonly
+                   class="w-full px-4 py-2 rounded-full bg-white">
+
+            <span class="text-xs text-gray-400 ml-2">Disciplina</span>
+            <input type="text"
+                   value="Matemática"
+                   readonly
+                   class="w-full px-4 py-2 rounded-full bg-white">
+
+            <span class="text-xs text-gray-400 ml-2">Turno de atendimento</span>
+            <input type="text"
+                   value="Manhã e Tarde"
+                   readonly
+                   class="w-full px-4 py-2 rounded-full bg-white">
+
+            <span class="text-xs text-gray-400 ml-2">Dias de atendimento</span>
+            <input type="text"
+                   value="Segunda a Quinta"
+                   readonly
+                   class="w-full px-4 py-2 rounded-full bg-white">
+        </div>
+    </div>
+
+    <!-- MARCAÇÃO -->
+    <h3 class="text-lg font-semibold text-pink-700 mb-4">
+        Marcar sessão
+    </h3>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div>
+            <label class="block font-medium mb-2">Data</label>
+            <input type="date"
+                   class="w-full px-4 py-3 rounded-full bg-gray-100">
+        </div>
+
+        <div>
+            <label class="block font-medium mb-2">Horário</label>
+            <input type="time"
+                   class="w-full px-4 py-3 rounded-full bg-gray-100">
+        </div>
+    </div>
+
+    <!-- BOTÃO -->
+    <div class="flex justify-end">
+        <button class="px-8 py-3 rounded-full text-white font-semibold
+                       bg-gradient-to-r from-pink-600 to-blue-800">
+            Marcar sessão
+        </button>
+    </div>
+
+</div>
+
+<!-- SCRIPT -->
+<script>
+function atualizarDisciplinas() {
+    const tipo = document.getElementById("tipoMateria").value;
+    const disciplina = document.getElementById("disciplina");
+
+    disciplina.innerHTML = "";
+
+    let materias = [];
+
+    if (tipo === "propedeutica") {
+        materias = [
+            "Biologia",
+            "Física",
+            "Geografia",
+            "Língua Inglesa",
+            "Língua Portuguesa",
+            "Matemática",
+            "Química I",
+            "Química II"
+        ];
+    }
+
+    if (tipo === "tecnica") {
+        materias = [
+            "Eletrônica",
+            "Fundamentos da Programação Orientada a Objetos",
+            "Manutenção de Computadores",
+            "Manutenção Eletrônica",
+            "Programação Web"
+        ];
+    }
+
+    if (materias.length === 0) {
+        disciplina.innerHTML = "<option>Selecione o tipo de matéria primeiro</option>";
+        return;
+    }
+
+    disciplina.innerHTML = "<option value=''>Selecione</option>";
+
+    materias.forEach(materia => {
+        const option = document.createElement("option");
+        option.textContent = materia;
+        option.value = materia;
+        disciplina.appendChild(option);
+    });
+}
+</script>
+
+{% endblock %}
