@@ -74,6 +74,5 @@ def acesso_negado():
     return render_template('acesso_negado.html')
 
 
-
 if __name__ == '__main__':
     app.run(debug=True)
