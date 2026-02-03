@@ -10,6 +10,7 @@ from controllers.grupo import bp_grupo
 from flask_migrate import Migrate
 from flask_login import login_required, current_user
 from commands.criar_servidor import criar_servidor
+from models import Usuario, SessaoTutoria, Tutor, ProfessorOrientador
 
 load_dotenv()
 
@@ -43,7 +44,7 @@ def index():
 def login():
     return render_template('login.html')
 
-
+#---------------------------------------------------------------
 
 @app.route('/aluno/home')
 @login_required
@@ -70,12 +71,53 @@ def aluno_perfil():
 def aluno_marcar():
     return render_template('aluno/marcar.html')
 
+#---------------------------------------------------------
+
+
+@app.route('/servidor/home')
+@login_required
+def servidor_home():
+    contagens = {
+        'usuarios': Usuario.query.count(),
+        'tutorias': SessaoTutoria.query.count(),
+        'tutores': Usuario.query.filter_by(funcao='tutor').count(),
+        'orientadores': Usuario.query.filter_by(funcao='professor_orientador').count()
+    }
+    return render_template('servidor/servidor.html', status=contagens)
+
+@app.route('/servidor/perfil')
+@login_required
+def servidor_perfil():
+    return render_template('servidor/perfil.html')
+
+@app.route('/servidor/tutorias')
+@login_required
+def servidor_tutorias():
+    return render_template('servidor/tutorias.html')
+
+@app.route('/servidor/pendentes')
+@login_required
+def servidor_pendentes():
+    return render_template('servidor/pendentes.html')
+
+@app.route('/servidor/comunicacao')
+@login_required
+def servidor_comunicacao():
+    return render_template('servidor/comunicacao.html')
+
+#-----------------------------------------------------------------
 
 @app.route('/painel')
 @login_required
 def painel():
     if current_user.funcao == 'servidor':
-        return render_template('servidor/servidor.html')
+        contagens = {
+            'usuarios': Usuario.query.count(),
+            'tutorias': SessaoTutoria.query.count(),
+            'tutores': Usuario.query.filter_by(funcao='tutor').count(),
+            'orientadores': Usuario.query.filter_by(funcao='professor_orientador').count()
+        }
+        return render_template('servidor/servidor.html', status=contagens)
     if current_user.funcao == 'professor_orientador':
         return render_template('professor_orientador/professor_orientador.html')
     if current_user.funcao == 'professor':

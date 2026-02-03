@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Servidor - Gerenciar Usuários | SICAT{% endblock %}
+
+{% block content %}
+<div class="mb-6 flex justify-between items-center">
+    <h2 class="text-2xl font-bold text-gray-800">{{ titulo }}</h2>
+    <a href="{{ url_for('servidor_home') }}" class="text-sm text-gray-500 hover:underline">Voltar ao Painel</a>
+</div>
+
+<div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+    <table class="w-full text-left border-collapse">
+        <thead class="bg-gray-50 text-gray-600">
+            <tr>
+                <th class="px-6 py-4 font-bold">Nome</th>
+                <th class="px-6 py-4 font-bold">Cargo Atual</th>
+                <th class="px-6 py-4 text-right font-bold">Ação</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+            {% for u in usuarios %}
+            <tr class="hover:bg-gray-50">
+                <td class="px-6 py-4 font-medium">{{ u.nome }}</td>
+                <td class="px-6 py-4 capitalize">{{ u.funcao }}</td>
+                <td class="px-6 py-4 text-right">
+                    {% if acao == 'promover' %}
+                    <a href="{{ url_for('usuarios.mudar_cargo', acao='promover', id=u.id) }}" 
+                       class="bg-[#002E89] text-white px-4 py-2 rounded-lg text-xs font-bold uppercase">Promover</a>
+                    {% else %}
+                    <a href="{{ url_for('usuarios.mudar_cargo', acao='despromover', id=u.id) }}" 
+                       class="bg-red-600 text-white px-4 py-2 rounded-lg text-xs font-bold uppercase">Remover Cargo</a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="3" class="px-6 py-10 text-center text-gray-400">Nenhum usuário nesta categoria.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
