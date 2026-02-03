@@ -41,9 +41,10 @@ class Aluno(Usuario):
     id = db.Column(
         db.Integer,
         db.ForeignKey('usuarios.id'),
-        primary_key=True
+        primary_key=True  
     )
 
+                     
     __mapper_args__ = {
         'polymorphic_identity': 'aluno'
     }
@@ -59,6 +60,21 @@ class Tutor(Aluno):
         db.ForeignKey('alunos.id'),
         primary_key=True
     )
+
+    turno = db.Column(db.String(100))
+    
+    id_disciplina = db.Column(
+        db.Integer,
+        db.ForeignKey('disciplinas.id'),
+        nullable=False
+    )
+
+    id_professorOrientador = db.Column(
+        db.Integer,
+        db.ForeignKey('professoresOrientadores.id'),
+        nullable=False
+    )
+
 
     __mapper_args__ = {
         'polymorphic_identity': 'tutor'
@@ -76,6 +92,8 @@ class Professor(Usuario):
         primary_key=True
     )
 
+    disciplina_lecionada = db.Column(db.String(100))
+
     __mapper_args__ = {
         'polymorphic_identity': 'professor'
     }
@@ -92,8 +110,15 @@ class ProfessorOrientador(Professor):
         primary_key=True
     )
 
+    disciplina_orientação = db.Column(
+        db.Integer,
+        db.ForeignKey('disciplinas.id'),
+        nullable=False
+    )
+
+
     __mapper_args__ = {
-        'polymorphic_identity': 'professoresOrientadores'
+        'polymorphic_identity': 'professor_orientador'
     }
 
 
@@ -113,8 +138,8 @@ class SessaoTutoria(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
 
-    horario_inicio = db.Column(db.DateTime, nullable=False)
-    horario_fim = db.Column(db.DateTime, nullable=False)
+    data = db.Column(db.Date, nullable=False)
+    horario = db.Column(db.Time, nullable=False)
     descricao = db.Column(db.Text)
 
     tutor_id = db.Column(
@@ -136,6 +161,7 @@ class GrupoEstudos(db.Model):
     __tablename__ = 'grupos_estudo'
 
     id = db.Column(db.Integer, primary_key=True)
+    nome = db.Column(db.Text)
     descricao = db.Column(db.Text)
 
     criador_id = db.Column(

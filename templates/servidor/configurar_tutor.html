@@ -1,0 +1,62 @@
+{% extends "servidor/servidor.html" %}
+{% block content %}
+<div class="card-stats max-w-lg mx-auto bg-white p-8 rounded-xl shadow-lg border border-gray-200">
+    <h2 class="text-2xl font-bold mb-6 text-gray-800">Configurar Tutoria: {{ usuario.nome }}</h2>
+    
+    <form action="{{ url_for('usuarios.efetivar_promocao') }}" method="POST" class="space-y-4">
+        <input type="hidden" name="usuario_id" value="{{ usuario.id }}">
+        
+        <div>
+            <label class="block font-bold text-gray-700 mb-1">Disciplina</label>
+            <select name="disciplina_id" id="sel-disc" class="w-full p-2 border rounded-lg" required>
+                <option value="">Selecione a disciplina...</option>
+                {% for d in disciplinas %}
+                <option value="{{ d.id }}">{{ d.nome }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <label class="block font-bold text-gray-700 mb-1">Professor Orientador</label>
+            <select name="orientador_id" id="sel-ori" class="w-full p-2 border rounded-lg" required>
+                <option value="">Escolha a disciplina primeiro</option>
+            </select>
+        </div>
+
+        <div>
+            <label class="block font-bold text-gray-700 mb-1">Turno de Atuação</label>
+            <input type="text" name="turno" class="w-full p-2 border rounded-lg" placeholder="Ex: Matutino" required>
+        </div>
+
+        <button type="submit" class="w-full bg-[#002E89] text-white font-bold py-3 rounded-lg hover:bg-blue-900 transition-colors">
+            Finalizar Promoção
+        </button>
+    </form>
+</div>
+
+<div id="dados-temp" style="display: none;">
+    {% for o in orientadores %}
+    <span data-id="{{ o.id }}" data-nome="{{ o.nome }}" data-disc="{{ o.disciplina_orientação }}"></span>
+    {% endfor %}
+</div>
+
+<script>
+    const selectDisc = document.getElementById('sel-disc');
+    const selectOri = document.getElementById('sel-ori');
+    const dados = document.querySelectorAll('#dados-temp span');
+
+    selectDisc.addEventListener('change', function() {
+        const idDisc = this.value;
+        selectOri.innerHTML = '<option value="">Selecione o orientador...</option>';
+        
+        dados.forEach(item => {
+            if (item.getAttribute('data-disc') === idDisc) {
+                const opt = document.createElement('option');
+                opt.value = item.getAttribute('data-id');
+                opt.textContent = item.getAttribute('data-nome');
+                selectOri.appendChild(opt);
+            }
+        });
+    });
+</script>
+{% endblock %}

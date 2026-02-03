@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "servidor/servidor.html" %}
 {% block title %}Servidor - Gerenciar Usuários | SICAT{% endblock %}
 
 {% block content %}
@@ -21,13 +21,25 @@
             <tr class="hover:bg-gray-50">
                 <td class="px-6 py-4 font-medium">{{ u.nome }}</td>
                 <td class="px-6 py-4 capitalize">{{ u.funcao }}</td>
+                
                 <td class="px-6 py-4 text-right">
                     {% if acao == 'promover' %}
-                    <a href="{{ url_for('usuarios.mudar_cargo', acao='promover', id=u.id) }}" 
-                       class="bg-[#002E89] text-white px-4 py-2 rounded-lg text-xs font-bold uppercase">Promover</a>
+                        {% if u.funcao == 'aluno' %}
+                            <a href="{{ url_for('usuarios.configurar_promocao', id=u.id) }}" 
+                            class="bg-[#002E89] text-white px-4 py-2 rounded-lg text-xs font-bold uppercase">Configurar Tutor</a>
+                        
+                        {% elif u.funcao == 'professor' %}
+                            <a href="{{ url_for('usuarios.configurar_orientacao', id=u.id) }}" 
+                            class="bg-[#002E89] text-white px-4 py-2 rounded-lg text-xs font-bold uppercase">Configurar Orientador</a>
+                        
+                        {% else %}
+                            <a href="{{ url_for('usuarios.mudar_cargo', acao='promover', id=u.id) }}" 
+                            class="bg-[#002E89] text-white px-4 py-2 rounded-lg text-xs font-bold uppercase">Promover</a>
+                        {% endif %}
+
                     {% else %}
-                    <a href="{{ url_for('usuarios.mudar_cargo', acao='despromover', id=u.id) }}" 
-                       class="bg-red-600 text-white px-4 py-2 rounded-lg text-xs font-bold uppercase">Remover Cargo</a>
+                        <a href="{{ url_for('usuarios.mudar_cargo', acao='despromover', id=u.id) }}" 
+                        class="bg-red-600 text-white px-4 py-2 rounded-lg text-xs font-bold uppercase">Remover Cargo</a>
                     {% endif %}
                 </td>
             </tr>

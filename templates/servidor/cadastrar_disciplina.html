@@ -1,0 +1,25 @@
+{% extends "servidor/servidor.html" %}
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <div class="card-stats bg-white p-6 rounded-xl shadow-md mb-6">
+        <h2 class="text-xl font-bold mb-4">Cadastrar Nova Disciplina</h2>
+        <form action="{{ url_for('usuarios.cadastrar_disciplina') }}" method="POST" class="flex gap-4">
+            <input type="text" name="nome" class="input-pesquisa flex-1 border border-gray-300 p-2 rounded-lg" placeholder="Ex: Matemática Discreta" required>
+            <button type="submit" class="btn-nova bg-[#002E89] text-white px-6">Salvar</button>
+        </form>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-md overflow-hidden">
+        <table class="w-full text-left">
+            <thead class="bg-gray-50">
+                <tr><th class="px-6 py-3 font-bold text-gray-600">Disciplinas Ativas</th></tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                {% for d in disciplinas %}
+                <tr><td class="px-6 py-3">{{ d.nome }}</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

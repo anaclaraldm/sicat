@@ -1,8 +1,8 @@
-"""alteração do banco para adição de tabelas de grupo de estudos
+"""alterando banco, professor e prof orientador
 
-Revision ID: 8b296492efa2
+Revision ID: 1e59a4f4dd66
 Revises: 
-Create Date: 2026-01-31 18:28:22.241728
+Create Date: 2026-02-03 14:11:03.523788
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '8b296492efa2'
+revision = '1e59a4f4dd66'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -39,6 +39,7 @@ def upgrade():
     )
     op.create_table('professores',
     sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('disciplina_lecionada', sa.String(length=100), nullable=True),
     sa.ForeignKeyConstraint(['id'], ['usuarios.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
@@ -56,6 +57,7 @@ def upgrade():
     )
     op.create_table('grupos_estudo',
     sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('nome', sa.Text(), nullable=True),
     sa.Column('descricao', sa.Text(), nullable=True),
     sa.Column('criador_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['criador_id'], ['alunos.id'], ),
@@ -70,12 +72,9 @@ def upgrade():
     )
     op.create_table('professoresOrientadores',
     sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('disciplina_orientação', sa.Integer(), nullable=False),
+    sa.ForeignKeyConstraint(['disciplina_orientação'], ['disciplinas.id'], ),
     sa.ForeignKeyConstraint(['id'], ['professores.id'], ),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_table('tutores',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.ForeignKeyConstraint(['id'], ['alunos.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('aluno_grupo_estudo',
@@ -92,10 +91,20 @@ def upgrade():
     sa.ForeignKeyConstraint(['professor_orientador_id'], ['professoresOrientadores.id'], ),
     sa.PrimaryKeyConstraint('professor_orientador_id', 'disciplina_id')
     )
+    op.create_table('tutores',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('turno', sa.String(length=100), nullable=True),
+    sa.Column('id_disciplina', sa.Integer(), nullable=False),
+    sa.Column('id_professorOrientador', sa.Integer(), nullable=False),
+    sa.ForeignKeyConstraint(['id'], ['alunos.id'], ),
+    sa.ForeignKeyConstraint(['id_disciplina'], ['disciplinas.id'], ),
+    sa.ForeignKeyConstraint(['id_professorOrientador'], ['professoresOrientadores.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
     op.create_table('sessoes_tutoria',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('horario_inicio', sa.DateTime(), nullable=False),
-    sa.Column('horario_fim', sa.DateTime(), nullable=False),
+    sa.Column('data', sa.Date(), nullable=False),
+    sa.Column('horario', sa.Time(), nullable=False),
     sa.Column('descricao', sa.Text(), nullable=True),
     sa.Column('tutor_id', sa.Integer(), nullable=False),
     sa.Column('professor_orientador_id', sa.Integer(), nullable=False),
@@ -133,9 +142,9 @@ def downgrade():
     op.drop_table('aluno_sessao_tutoria')
     op.drop_table('tutor_servidor_etep')
     op.drop_table('sessoes_tutoria')
+    op.drop_table('tutores')
     op.drop_table('professor_orientador_disciplina')
     op.drop_table('aluno_grupo_estudo')
-    op.drop_table('tutores')
     op.drop_table('professoresOrientadores')
     op.drop_table('professor_disciplina')
     op.drop_table('grupos_estudo')
