@@ -137,7 +137,6 @@ def gerenciar_lista(acao, funcao_alvo):
                            usuarios=usuarios, 
                            acao=acao, 
                            titulo=titulo)
-
 @bp_usuarios.route('/usuarios/mudar-cargo/<acao>/<int:id>')
 @login_required
 def mudar_cargo(acao, id):
@@ -145,89 +144,40 @@ def mudar_cargo(acao, id):
         return redirect('/acesso-negado')
     
     usuario = Usuario.query.get_or_404(id)
-    
-    if acao == 'promover':
-        if usuario.funcao == 'professor': 
-            usuario.funcao = 'professor_orientador'
-            flash(f'Professor {usuario.nome} agora é Orientador!')
-    
-    elif acao == 'despromover':
-        if usuario.funcao == 'tutor':
-            db.session.execute(db.text("DELETE FROM tutores WHERE id = :id"), {'id': id})
-            usuario.funcao = 'aluno'
-            
-        elif usuario.funcao == 'professor_orientador':
-            user_id = usuario.id
-            nome_professor = usuario.nome 
+    # SALVAMOS O NOME E A FUNÇÃO ANTES DE QUALQUER ALTERAÇÃO
+    nome_usuario = usuario.nome
+    funcao_original = usuario.funcao
 
-            db.session.execute(
-                db.text("UPDATE usuarios SET funcao = 'professor' WHERE id = :id"),
-                {'id': user_id}
-            )
+    try:
+        if acao == 'promover':
+            if usuario.funcao == 'professor': 
+                usuario.funcao = 'professor_orientador'
+                flash(f'Professor {nome_usuario} agora é Orientador!')
+            # Nota: A promoção de Tutor geralmente é feita por outra rota 
+            # que pede disciplina/turno, mas se quiser adicionar algo aqui, pode.
 
-            db.session.execute(
-                db.text("DELETE FROM professoresOrientadores WHERE id = :id"),
-                {'id': user_id}
-            )
-            
-            db.session.commit()
+        elif acao == 'despromover':
+            if funcao_original == 'tutor':
+                # Remove da tabela específica
+                db.session.execute(db.text("DELETE FROM tutores WHERE id = :id"), {'id': id})
+                # Atualiza o objeto
+                usuario.funcao = 'aluno'
+                flash(f'Cargo removido. {nome_usuario} agora é apenas aluno.')
+                
+            elif funcao_original == 'professor_orientador':
+                # Remove da tabela específica
+                db.session.execute(db.text("DELETE FROM professoresOrientadores WHERE id = :id"), {'id': id})
+                # Atualiza o objeto
+                usuario.funcao = 'professor'
+                flash(f'Cargo removido. {nome_usuario} agora é apenas Professor.')
 
-            flash(f'Cargo removido. {nome_professor} agora é apenas Professor.')
-            
-            return redirect('/painel')
-        
         db.session.commit()
-        flash(f'Cargo removido. {usuario.nome} agora é apenas Professor.')
-    
-    db.session.commit()
-    return redirect('/painel')
 
-@bp_usuarios.route('/usuarios/configurar-promocao/<int:id>')
-@login_required
-def configurar_promocao(id):
-    if current_user.funcao != 'servidor':
-        return redirect('/acesso-negado')
-    
-    usuario = Usuario.query.get_or_404(id)
-    
-    orientadores = ProfessorOrientador.query.all()
-    
-    disciplinas = Disciplina.query.all()
-    
-    print(f"Disciplinas encontradas: {len(disciplinas)}")
-    
-    return render_template('servidor/configurar_tutor.html', 
-                           usuario=usuario, 
-                           disciplinas=disciplinas, 
-                           orientadores=orientadores)
+    except Exception as e:
+        db.session.rollback()
+        flash(f"Erro ao alterar cargo: {e}")
+        print(f"Erro detalhado: {e}")
 
-@bp_usuarios.route('/usuarios/efetivar-promocao', methods=['POST'])
-@login_required
-def efetivar_promocao():
-    if current_user.funcao != 'servidor':
-        return redirect('/acesso-negado')
-
-    usuario_id = request.form.get('usuario_id')
-    disciplina_id = request.form.get('disciplina_id')
-    orientador_id = request.form.get('orientador_id')
-    turno = request.form.get('turno')
-
-    usuario = Usuario.query.get(usuario_id)
-
-  
-    novo_tutor = Tutor(
-        id=usuario.id,
-        id_disciplina=disciplina_id,
-        id_professorOrientador=orientador_id,
-        turno=turno
-    )
-    
-    usuario.funcao = 'tutor' 
-    
-    db.session.add(novo_tutor)
-    db.session.commit()
-    
-    flash(f'{usuario.nome} promovido a Tutor com sucesso!')
     return redirect('/painel')
 
 
@@ -307,3 +257,65 @@ def cadastrar_disciplina():
         flash(f'Disciplina "{nome_disciplina}" cadastrada!')
     
     return redirect(url_for('usuarios.cadastrar_disciplina'))
+
+
+
+@bp_usuarios.route('/usuarios/configurar-promocao/<int:id>')
+@login_required
+def configurar_promocao(id):
+    # ... verificação de servidor ...
+    usuario = Usuario.query.get_or_404(id)
+    orientadores = ProfessorOrientador.query.all() # Lista orientadores disponíveis
+    disciplinas = Disciplina.query.all() # Lista disciplinas cadastradas
+    
+    return render_template('servidor/configurar_tutor.html', 
+                           usuario=usuario, 
+                           disciplinas=disciplinas, 
+                           orientadores=orientadores)
+
+                           
+@bp_usuarios.route('/usuarios/efetivar-promocao', methods=['POST'])
+@login_required
+def efetivar_promocao():
+    if current_user.funcao != 'servidor':
+        return redirect('/acesso-negado')
+
+    usuario_id = request.form.get('usuario_id')
+    disciplina_id = request.form.get('disciplina_id')
+    orientador_id = request.form.get('orientador_id')
+    turno = request.form.get('turno')
+
+    usuario = Usuario.query.get(usuario_id)
+
+    if usuario:
+        try:
+            db.session.execute(
+                db.text("INSERT IGNORE INTO alunos (id) VALUES (:id)"),
+                {'id': usuario_id}
+            )
+
+            usuario.funcao = 'tutor'
+
+            sql = """
+                INSERT INTO tutores (id, id_disciplina, id_professorOrientador, turno) 
+                VALUES (:id, :disc, :ori, :turno)
+                ON DUPLICATE KEY UPDATE 
+                id_disciplina=:disc, id_professorOrientador=:ori, turno=:turno
+            """
+            db.session.execute(db.text(sql), {
+                'id': usuario_id,
+                'disc': disciplina_id,
+                'ori': orientador_id,
+                'turno': turno
+            })
+
+            db.session.commit()
+            flash(f'{usuario.nome} promovido a Tutor com sucesso!')
+        except Exception as e:
+            db.session.rollback()
+            flash("Erro ao promover tutor.")
+            print(f"Erro: {e}")
+    
+    return redirect('/painel')
+
+
