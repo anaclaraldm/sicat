@@ -10,7 +10,7 @@ from controllers.grupo import bp_grupo
 from flask_migrate import Migrate
 from flask_login import login_required, current_user
 from commands.criar_servidor import criar_servidor
-from models import Usuario, SessaoTutoria, Tutor, ProfessorOrientador
+from models import Usuario, SessaoTutoria, Tutor, ProfessorOrientador, Disciplina
 
 load_dotenv()
 
@@ -69,8 +69,22 @@ def aluno_perfil():
 @app.route('/aluno/marcar')
 @login_required
 def aluno_marcar():
-    return render_template('aluno/marcar.html')
-
+    sessoes_vagas = SessaoTutoria.query.all() 
+    disciplinas = Disciplina.query.all()
+    
+    lista_sessoes_js = []
+    for s in sessoes_vagas:
+        lista_sessoes_js.append({
+            "id": s.id,
+            "disciplina_id": s.tutor.disciplina_id, # Buscando via relação tutor -> disciplina
+            "tutor": s.tutor.usuario.nome if s.tutor and s.tutor.usuario else "Tutor",
+            "data": s.data.strftime('%d/%m/%Y'),
+            "horario": s.horario.strftime('%H:%M')
+        })
+    
+    return render_template('aluno/marcar.html', 
+                           sessoes_js=lista_sessoes_js, 
+                           disciplinas=disciplinas)
 #---------------------------------------------------------
 
 

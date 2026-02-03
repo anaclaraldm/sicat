@@ -147,9 +147,7 @@ def mudar_cargo(acao, id):
     usuario = Usuario.query.get_or_404(id)
     
     if acao == 'promover':
-        # Aqui você pode manter como está ou redirecionar para as rotas de configuração
         if usuario.funcao == 'professor': 
-            # Se quiser promover direto sem configurar disciplina (não recomendado se usa o filtro)
             usuario.funcao = 'professor_orientador'
             flash(f'Professor {usuario.nome} agora é Orientador!')
     
