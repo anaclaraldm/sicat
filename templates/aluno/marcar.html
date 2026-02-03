@@ -36,37 +36,27 @@ Marcar uma sessão de tutoria
 </form>
 
 <script>
-    // Recebe a lista processada pela rota
-    const sessoesBanco = {{ sessoes_js | tojson }};
+    
+    const sessoesBanco = JSON.parse('{{ sessoes_js | tojson | safe }}');
 
-    function filtrarSessoes() {
-        const disciplinaId = document.getElementById("id_disciplina").value;
-        const selectSessao = document.getElementById("id_sessao");
-        const container = document.getElementById("sessao_container");
-        
-        selectSessao.innerHTML = ""; 
+    function pesquisarSessoes() {
+        const discId = document.getElementById("filtro_disciplina").value;
+        const container = document.getElementById("resultados_container");
 
-        if (!disciplinaId) {
-            container.classList.add("hidden");
+        // Limpa o container com segurança
+        container.innerHTML = "";
+
+        // Verificação para evitar erro de variável nula
+        if (!sessoesBanco || sessoesBanco.length === 0) {
+            container.innerHTML = "<p>Nenhuma sessão disponível.</p>";
             return;
         }
 
-        const filtradas = sessoesBanco.filter(s => s.disciplina_id == disciplinaId);
-
-        if (filtradas.length > 0) {
-            container.classList.remove("hidden");
-            selectSessao.innerHTML = "<option value=''>Escolha um horário e tutor</option>";
-            
-            filtradas.forEach(s => {
-                const opt = document.createElement("option");
-                opt.value = s.id;
-                opt.textContent = `${s.data} às ${s.horario} - Tutor: ${s.tutor}`;
-                selectSessao.appendChild(opt);
-            });
-        } else {
-            container.classList.remove("hidden");
-            selectSessao.innerHTML = "<option value=''>Nenhuma sessão disponível para esta matéria</option>";
-        }
+        // Filtro
+        const filtradas = sessoesBanco.filter(s => !discId || s.disciplina_id == discId);
+        
+        // Renderização...
+        console.log("Sessões filtradas:", filtradas);
     }
 </script>
 {% endblock %}
