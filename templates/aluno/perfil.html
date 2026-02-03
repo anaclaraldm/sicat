@@ -1,13 +1,10 @@
-{% extends "base.html" %}
-
-{% block title %}Perfil do Tutor | SICAT{% endblock %}
-
-{% block user %}Tutor(a):{% endblock %}
+{% extends "aluno/aluno.html" %}
+{% block title %}Aluno - Perfil | SICAT{% endblock %}
 
 {% block content %}
 
 <!-- VOLTAR -->
-<a href="{{ url_for('tutor_home') }}" class="text-xl mb-6 inline-block">←</a>
+<a href="{{ url_for('aluno_home') }}" class="text-xl mb-6 inline-block">←</a>
 
 <div class="grid grid-cols-1 lg:grid-cols-[220px_1fr] gap-10 items-start">
 
@@ -44,15 +41,8 @@
 
         <div>
             <label class="text-sm text-gray-600">Função</label>
-            <div class="input-perfil">
+            <div class="input-perfil" style="text-transform: capitalize;">
                 {{current_user.funcao}}
-            </div>
-        </div>
-
-        <div>
-            <label class="text-sm text-gray-600">Disciplina</label>
-            <div class="input-perfil">
-                Informática
             </div>
         </div>
 

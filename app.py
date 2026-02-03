@@ -43,52 +43,46 @@ def index():
 def login():
     return render_template('login.html')
 
-@app.route('/tutor/home')
-
-def tutor_home():
-    return render_template('tutor/tutor_home.html')
-
-@app.route("/tutor/perfil")
-def perfil():
-    return render_template("tutor/perfil.html")
-
-@app.route("/tutor/historico")
-def historico():
-    return render_template ("tutor/historico.html")
 
 
-
-@app.route('/tutor/tutorias')
+@app.route('/aluno/home')
 @login_required
-def tutor_tutorias():
-    return render_template('tutor/tutor_tutorias.html')
+def aluno_home():
+    return render_template('aluno/aluno.html')
 
-@app.route('/tutorado/home')
-def tutorado_home():
-    return render_template('tutorado/home.html')
+@app.route('/aluno/tutorias')
+@login_required
+def aluno_tutorias():
+    return render_template('aluno/tutorias.html')
 
-@app.route('/tutorado/marcar')
-def tutorado_marcar():
-    return render_template('tutorado/marcar.html')
+@app.route('/aluno/historico')
+@login_required
+def aluno_historico():
+    return render_template('aluno/historico.html')
 
+@app.route('/aluno/perfil')
+@login_required
+def aluno_perfil():
+    return render_template('aluno/perfil.html')
 
-@app.route('/tutorado/historico')
-def tutorado_historico():
-    return render_template('tutorado/historico.html')
+@app.route('/aluno/marcar')
+@login_required
+def aluno_marcar():
+    return render_template('aluno/marcar.html')
 
 
 @app.route('/painel')
 @login_required
 def painel():
     if current_user.funcao == 'servidor':
-        return render_template('servidor.html')
+        return render_template('servidor/servidor.html')
     if current_user.funcao == 'professor_orientador':
-        return render_template('professor_orientador.html')
+        return render_template('professor_orientador/professor_orientador.html')
     if current_user.funcao == 'professor':
-        return render_template('professor.html')
+        return render_template('professor/professor.html')
     if current_user.funcao == 'tutor':
-        return render_template('tutor.html')
-    return render_template('aluno.html')
+        return render_template('tutor/tutor.html')
+    return render_template('aluno/aluno.html')
 
 
 @app.route('/acesso-negado')
