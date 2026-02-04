@@ -36,33 +36,44 @@ def criar_sessao():
 @bp_tutoria.route('/sessoes/editar/<int:id>', methods=['GET', 'POST'])
 @login_required
 def editar_sessao(id):
-    sessao = SessaoTutoria.query.get(id)
-    if current_user.id != sessao.tutor_id:
-        flash('Acesso negado')
+    sessao = SessaoTutoria.query.get_or_404(id)
+    
+    if current_user.funcao != 'servidor' and sessao.tutor_id != current_user.id:
+        flash('Acesso negado!')
         return redirect('/painel')
 
-    if request.method == 'GET':
-        return render_template('sessao_tutoria_editar.html', sessao=sessao)
+    if request.method == 'POST':
+        data_horario_str = request.form.get('data_horario')
+        try:
+            # Converte a string do HTML "YYYY-MM-DDTHH:MM" para objeto datetime
+            dt_obj = datetime.strptime(data_horario_str, '%Y-%m-%dT%H:%M')
+            
+            sessao.data = dt_obj.date()
+            sessao.horario = dt_obj.time()
+            sessao.descricao = request.form.get('descricao')
+            
+            db.session.commit()
+            flash('Sessão atualizada com sucesso!')
+            return redirect('/tutor/pendentes') # Ou a rota de listagem que preferir
+        except ValueError:
+            flash('Erro no formato da data.')
+    
+    return render_template('tutor/editar_atividade.html', sessao=sessao)
 
-    sessao.horario_inicio = request.form['horario_inicio']
-    sessao.horario_fim = request.form['horario_fim']
-    sessao.descricao = request.form['descricao']
-    db.session.commit()
-    flash('Sessão atualizada!')
-    return redirect('/sessoes')
-
-@bp_tutoria.route('/sessoes/deletar/<int:id>', methods=['GET', 'POST'])
+@bp_tutoria.route('/sessoes/deletar/<int:id>')
 @login_required
 def deletar_sessao(id):
-    sessao = SessaoTutoria.query.get(id)
-    if current_user.id != sessao.tutor_id:
-        flash('Acesso negado')
-        return redirect('/painel')
-
-    db.session.delete(sessao)
-    db.session.commit()
-    flash('Sessão deletada!')
-    return redirect('/sessoes')
+    sessao = SessaoTutoria.query.get_or_404(id)
+    
+    # Segurança
+    if current_user.funcao != 'servidor' and sessao.tutor_id != current_user.id:
+        flash('Acesso negado!')
+    else:
+        db.session.delete(sessao)
+        db.session.commit()
+        flash('Sessão excluída com sucesso!')
+        
+    return redirect('/painel')
 
 @bp_tutoria.route('/sessoes/agendar/<int:id>')
 @login_required

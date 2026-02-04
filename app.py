@@ -130,7 +130,7 @@ def tutor_home():
 @app.route('/tutor/perfil')
 @login_required
 def tutor_perfil():
-    return render_template('tutor/perfil.html')
+    return render_template('tutor/perfil.html', usuario=current_user)
 
 @app.route('/tutor/tutorias')
 @login_required
