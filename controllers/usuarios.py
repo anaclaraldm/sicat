@@ -88,7 +88,59 @@ def editar_perfil():
     
     return render_template('usuarios/editar_perfil.html', usuario=usuario)
 
-       
+@bp_usuarios.route('/usuarios/deletar-conta', methods=['POST'])
+@login_required
+def deletar_conta():
+    user_id = current_user.id
+    usuario = Usuario.query.get(user_id)
+
+    try:
+        # PASSO 1: Cortar os "fios" externos (Tabelas de ligação N:N)
+        # Se o usuário for um aluno inscrito em sessões ou grupos, removemos a inscrição primeiro.
+        queries_limpeza = [
+            "DELETE FROM aluno_sessao_tutoria WHERE aluno_id = :id",
+            "DELETE FROM aluno_grupo_estudo WHERE aluno_id = :id",
+            "DELETE FROM aluno_disciplina WHERE aluno_id = :id",
+            "DELETE FROM professor_disciplina WHERE professor_id = :id",
+            "DELETE FROM professor_orientador_disciplina WHERE professor_orientador_id = :id",
+            "DELETE FROM tutor_servidor_etep WHERE tutor_id = :id",
+            "DELETE FROM servidor_etep_sessao_tutoria WHERE servidor_etep_id = :id"
+        ]
+        for query in queries_limpeza:
+            db.session.execute(db.text(query), {'id': user_id})
+
+        # PASSO 2: Deletar o que o usuário CRIOU (Coisas que dependem dele)
+        # Se ele for tutor, as sessões que ele criou morrem aqui.
+        db.session.execute(db.text("DELETE FROM sessoes_tutoria WHERE tutor_id = :id"), {'id': user_id})
+        # Se ele for aluno e criou grupos.
+        db.session.execute(db.text("DELETE FROM grupos_estudo WHERE criador_id = :id"), {'id': user_id})
+
+        # PASSO 3: Deletar a Herança (DO MAIS ESPECÍFICO PARA O MAIS GERAL)
+        # Primeiro o neto (Tutor), depois o pai (Aluno), depois o avô (Usuário)
+        
+        # Se for Tutor ou Orientador (Nível mais baixo)
+        db.session.execute(db.text("DELETE FROM tutores WHERE id = :id"), {'id': user_id})
+        db.session.execute(db.text("DELETE FROM professoresOrientadores WHERE id = :id"), {'id': user_id})
+        
+        # Nível intermediário
+        db.session.execute(db.text("DELETE FROM alunos WHERE id = :id"), {'id': user_id})
+        db.session.execute(db.text("DELETE FROM professores WHERE id = :id"), {'id': user_id})
+        db.session.execute(db.text("DELETE FROM servidores WHERE id = :id"), {'id': user_id})
+
+        # PASSO 4: Deletar o registro raiz (A tabela 'usuarios')
+        # Agora que todas as outras tabelas estão limpas, o banco permite apagar aqui.
+        db.session.delete(usuario)
+        
+        db.session.commit()
+        logout_user()
+        flash('Conta excluída com sucesso.')
+        return redirect(url_for('index'))
+
+    except Exception as e:
+        db.session.rollback()
+        print(f"ERRO AO DELETAR: {e}")
+        flash('Erro técnico ao excluir. Verifique o terminal.')
+        return redirect('/painel')
 
 @bp_usuarios.route('/usuarios/gerenciar-lista/<acao>/<funcao_alvo>')
 @login_required
