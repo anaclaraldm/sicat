@@ -20,12 +20,6 @@
         </defs>
     </svg>
     <div class="frente cadastro column flex">
-    {% set mensagens = get_flashed_messages(with_categories=true) %}
-    {% if mensagens %}
-        {% for cat, m in mensagens %}
-            <div class="flash" role="alert"> {{m}} </div>
-        {% endfor %}
-    {% endif %}
         <h1>LOGIN</h1>
         <form class="flex column" action="/autenticar" method="post">
             <div class="flex column label">
