@@ -76,33 +76,45 @@ def listar():
 @bp_usuarios.route('/usuarios/editar/<int:id>', methods=['GET', 'POST'])
 @login_required
 def editar(id):
-    if current_user.funcao != 'servidor':
-        return redirect('/acesso-negado')
+    usuario = current_user 
 
-    usuario = Usuario.query.get(id)
-
-    if request.method == 'GET':
-        return render_template('usuarios_editar.html', usuario=usuario)
-
-    usuario.funcao = request.form['funcao']
-    db.session.commit()
+    if request.method == 'POST':
+        # O tutor PODE alterar: nome, email, telefone e senha
+        usuario.nome = request.form.get('nome')
+        usuario.email = request.form.get('email')
+        usuario.telefone = request.form.get('telefone')
+        
+        nova_senha = request.form.get('senha')
+        if nova_senha and nova_senha.strip() != "":
+            usuario.senha = nova_senha 
+        
+        db.session.commit()
+        flash('Perfil atualizado com sucesso!')
 
     return redirect('/usuarios')
 
-@bp_usuarios.route('/usuarios/delete/<int:id>', methods=['GET', 'POST'])
+@bp_usuarios.route('/usuario/deletar', methods=['POST'])
 @login_required
-def delete(id):
-    if current_user.funcao != 'servidor':
-        return redirect('/acesso-negado')
+def deletar_propria_conta():
+    usuario = current_user
+    
+    try:
 
-    usuario = Usuario.query.get(id)
+        SessaoTutoria.query.filter_by(tutor_id=usuario.id).delete()
+        
 
-    if request.method == 'GET':
-        return render_template('usuarios_delete.html', usuario=usuario)
+        db.session.delete(usuario)
+        
+        db.session.commit()
+        
+        flash('Sua conta e todo o seu histórico foram removidos com sucesso.')
+        return redirect('/') # Redireciona para a tela inicial ou login
 
-    db.session.delete(usuario)
-    db.session.commit()
-    return redirect('/usuarios')
+    except Exception as e:
+        db.session.rollback()
+        print(f"Erro ao deletar conta: {e}") # Para você ver o erro no terminal
+        flash('Não foi possível excluir sua conta devido a um erro interno.')
+        return redirect('/')
 
 
 @bp_usuarios.route('/usuarios/gerenciar-lista/<acao>/<funcao_alvo>')
@@ -317,5 +329,7 @@ def efetivar_promocao():
             print(f"Erro: {e}")
     
     return redirect('/painel')
+
+#-------------------------------------------------------------------------
 
 

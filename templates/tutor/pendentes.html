@@ -1,0 +1,69 @@
+{% extends "tutor/tutor.html" %}
+{% block titulo_sessao %}Minhas Atividades Registradas{% endblock %}
+{% block content %}
+<div class="container mx-auto p-6">
+    <div class="grid gap-4">
+        {% for atividade in atividades %}
+            <div class="bg-white border border-gray-100 rounded-3xl p-6 shadow-sm hover:shadow-md transition-all duration-300">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    
+                    <div class="flex-1">
+                        <div class="flex items-center gap-3 mb-2">
+                            <span class="bg-purple-600 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                                {{ atividade.data.strftime('%d/%m/%Y') }}
+                            </span>
+                            <span class="flex items-center gap-1 text-gray-500 text-sm font-medium">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                {{ atividade.horario.strftime('%H:%M') }}
+                            </span>
+                        </div>
+                        
+                        <h3 class="text-xl font-bold text-gray-800 leading-tight">
+                            {% if atividade.alunos %}
+                                Tutoria com Aluno(s)
+                            {% else %}
+                                Atendimento Docente
+                            {% endif %}
+                        </h3>
+                        
+                        <div class="flex items-center gap-2 mt-2 text-gray-500">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                            <span class="text-sm">
+                                {% if atividade.alunos %}
+                                    {{ atividade.alunos|length }} aluno(s) participante(s)
+                                {% else %}
+                                    Individual / Apoio Pedagógico
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2 self-end md:self-center">
+                        <a href="{{ url_for('tutoria.editar_sessao', id=atividade.id) }}" 
+                        class="flex items-center justify-center w-10 h-10 bg-amber-100 text-amber-700 rounded-xl hover:bg-amber-600 hover:text-white transition-all duration-200"
+                        title="Editar atividade">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                        </a>
+
+                        <a href="{{ url_for('tutoria.deletar_sessao', id=atividade.id) }}" 
+                        onclick="return confirm('Deseja realmente excluir este registro?')"
+                        class="flex items-center justify-center w-10 h-10 bg-red-100 text-red-700 rounded-xl hover:bg-red-600 hover:text-white transition-all duration-200"
+                        title="Excluir atividade">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                        </a>
+                    </div>
+                </div>
+
+                {% if atividade.descricao %}
+                <div class="mt-5 pt-4 border-t border-gray-50">
+                    <p class="text-gray-600 text-sm leading-relaxed italic">
+                        "{{ atividade.descricao }}"
+                    </p>
+                </div>
+                {% endif %}
+            </div>
+            {% else %}
+         {% endfor %}
+    </div>
+</div>
+{% endblock %}

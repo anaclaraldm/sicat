@@ -1,40 +1,28 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    {% block head %}
-    <meta charset="UTF-8">
-    <title>Tutor - Tutorias Marcadas</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='tutor_tutorias.css') }}">
-    {% endblock %}
-</head>
-<body>
+{% extends "tutor/tutor.html" %}
 
-{% block header %}
-<header class="topbar">
-    <div class="logo">SICAT</div>
-    <nav>
-        <a href="/tutor/home">Home</a>
-        <a class="active" href="/tutor/tutorias">Tutorias Marcadas</a>
-        <a href="#">Solicitações</a>
-        <a href="#">Histórico</a>
-        <a href="#">Comunicação</a>
-    </nav>
-</header>
-{% endblock %}
-
+{% block titulo_sessao %}Tutorias Marcadas{% endblock %}
 {% block content %}
-<main class="container">
 
-    <section class="empty-state">
-        <h2>Tutorias marcadas</h2>
-        <p>Você não tem atividades de tutorias marcadas</p>
-
-        <div class="empty-actions">
-            <button class="btn-purple">Ver solicitações de sessão de tutoria</button>
-            <button class="btn-blue">Nova atividade de tutoria +</button>
+<div class="space-y-4">
+    {% for sessao in sessoes %}
+    <div class="bg-white p-4 rounded-xl shadow border-l-4 border-blue-900 flex justify-between items-center">
+        <div>
+            <p class="font-bold text-lg">
+                {% if sessao.alunos %}
+                    Aluno: {{ sessao.alunos[0].nome }}
+                {% else %}
+                    Sessão Aberta / Professor
+                {% endif %}
+            </p>
+            <p class="text-gray-600">Data: {{ sessao.horario_inicio }}</p>
+            <p class="text-sm italic">"{{ sessao.descricao }}"</p>
         </div>
-    </section>
-</main>
+        <button class="bg-green-600 text-white px-4 py-2 rounded-lg">Atender</button>
+    </div>
+    {% else %}
+    <p>Nenhuma tutoria marcada no momento.</p>
+    {% endfor %}
+</div>
 {% endblock %}
 
 </body>

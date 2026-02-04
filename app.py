@@ -1,6 +1,6 @@
 # from flask import Flask, render_template, request, redirect
 # import json
-from flask import Flask, render_template
+from flask import Flask, render_template,flash, redirect
 from utils import db, lm
 import os
 from dotenv import load_dotenv
@@ -118,6 +118,47 @@ def servidor_pendentes():
 @login_required
 def servidor_comunicacao():
     return render_template('servidor/comunicacao.html')
+#-----------------------------------------------------------------
+
+
+@app.route('/tutor/home')
+@login_required
+def tutor_home():
+    return render_template('tutor/tutor.html')
+
+
+@app.route('/tutor/perfil')
+@login_required
+def tutor_perfil():
+    return render_template('tutor/perfil.html')
+
+@app.route('/tutor/tutorias')
+@login_required
+def tutor_tutorias():
+    return render_template('tutor/tutorias.html')
+
+
+@app.route('/tutor/comunicacao')
+@login_required
+def tutor_comunicacao():
+    return render_template('tutor/comunicacao.html')
+
+@app.route('/tutor/historico')
+@login_required
+def tutor_historico():
+    return render_template('tutor/historico.html')
+
+
+@app.route('/tutor/pendentes') 
+@login_required
+def tutor_pendentes():
+    if current_user.funcao != 'tutor':
+        flash('Acesso negado')
+        return redirect('/painel')
+
+    atividades = SessaoTutoria.query.filter_by(tutor_id=current_user.id).order_by(SessaoTutoria.data.desc()).all()
+
+    return render_template('tutor/pendentes.html', atividades=atividades)
 
 #-----------------------------------------------------------------
 
