@@ -23,13 +23,10 @@ def cadastro():
         'funcao': funcao_escolhida
     }
 
-    # DECISÃO DE CLASSE: 
-    # Se for professor, usamos a classe Professor para preencher as duas tabelas
+
     if funcao_escolhida == 'professor':
         novo_usuario = Professor(**dados)
     elif funcao_escolhida == 'aluno':
-        # Se você tiver a classe Aluno no models, use-a aqui. 
-        # Se não tiver, pode manter Usuario(..).
         novo_usuario = Usuario(**dados) 
     else:
         novo_usuario = Usuario(**dados)
@@ -219,7 +216,6 @@ def gerenciar_lista(acao, funcao_alvo):
             ~Usuario.id.in_(ids_ocupados)
         ).all()
     else:
-        # Para despromover ou para alunos, mantemos a busca normal
         usuarios = Usuario.query.filter_by(funcao=funcao_alvo).all()
     
     titulos = {
@@ -244,7 +240,6 @@ def mudar_cargo(acao, id):
         return redirect('/acesso-negado')
     
     usuario = Usuario.query.get_or_404(id)
-    # SALVAMOS O NOME E A FUNÇÃO ANTES DE QUALQUER ALTERAÇÃO
     nome_usuario = usuario.nome
     funcao_original = usuario.funcao
 
@@ -253,21 +248,15 @@ def mudar_cargo(acao, id):
             if usuario.funcao == 'professor': 
                 usuario.funcao = 'professor_orientador'
                 flash(f'Professor {nome_usuario} agora é Orientador!')
-            # Nota: A promoção de Tutor geralmente é feita por outra rota 
-            # que pede disciplina/turno, mas se quiser adicionar algo aqui, pode.
 
         elif acao == 'despromover':
             if funcao_original == 'tutor':
-                # Remove da tabela específica
                 db.session.execute(db.text("DELETE FROM tutores WHERE id = :id"), {'id': id})
-                # Atualiza o objeto
                 usuario.funcao = 'aluno'
                 flash(f'Cargo removido. {nome_usuario} agora é apenas aluno.')
                 
             elif funcao_original == 'professor_orientador':
-                # Remove da tabela específica
                 db.session.execute(db.text("DELETE FROM professoresOrientadores WHERE id = :id"), {'id': id})
-                # Atualiza o objeto
                 usuario.funcao = 'professor'
                 flash(f'Cargo removido. {nome_usuario} agora é apenas Professor.')
 
@@ -363,10 +352,9 @@ def cadastrar_disciplina():
 @bp_usuarios.route('/usuarios/configurar-promocao/<int:id>')
 @login_required
 def configurar_promocao(id):
-    # ... verificação de servidor ...
     usuario = Usuario.query.get_or_404(id)
-    orientadores = ProfessorOrientador.query.all() # Lista orientadores disponíveis
-    disciplinas = Disciplina.query.all() # Lista disciplinas cadastradas
+    orientadores = ProfessorOrientador.query.all() 
+    disciplinas = Disciplina.query.all()
     
     return render_template('servidor/configurar_tutor.html', 
                            usuario=usuario, 

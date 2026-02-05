@@ -45,7 +45,6 @@ def editar_sessao(id):
     if request.method == 'POST':
         data_horario_str = request.form.get('data_horario')
         try:
-            # Converte a string do HTML "YYYY-MM-DDTHH:MM" para objeto datetime
             dt_obj = datetime.strptime(data_horario_str, '%Y-%m-%dT%H:%M')
             
             sessao.data = dt_obj.date()
@@ -54,7 +53,7 @@ def editar_sessao(id):
             
             db.session.commit()
             flash('Sessão atualizada com sucesso!')
-            return redirect('/tutor/pendentes') # Ou a rota de listagem que preferir
+            return redirect('/tutor/pendentes') 
         except ValueError:
             flash('Erro no formato da data.')
     
@@ -179,14 +178,14 @@ def registrar_atividade():
     try:
         dt_obj = datetime.strptime(data_horario_str, '%Y-%m-%dT%H:%M')
 
-        data_final = dt_obj.date()   # Extrai apenas 2026-02-03
-        horario_final = dt_obj.time() # Extrai apenas 22:30:00
+        data_final = dt_obj.date()   
+        horario_final = dt_obj.time() 
 
         tutor_info = Tutor.query.get(current_user.id)
 
         nova_sessao = SessaoTutoria(
-            horario=horario_final, # Agora é um objeto Time
-            data=data_final,       # Agora é um objeto Date
+            horario=horario_final, 
+            data=data_final,       
             descricao=descricao,
             tutor_id=current_user.id,
             professor_orientador_id=tutor_info.id_professorOrientador if tutor_info else None
