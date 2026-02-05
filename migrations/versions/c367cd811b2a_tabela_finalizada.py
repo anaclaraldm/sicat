@@ -1,8 +1,8 @@
-"""alterando banco, professor e prof orientador
+"""tabela finalizada
 
-Revision ID: 1e59a4f4dd66
+Revision ID: c367cd811b2a
 Revises: 
-Create Date: 2026-02-03 14:11:03.523788
+Create Date: 2026-02-05 13:40:23.976479
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '1e59a4f4dd66'
+revision = 'c367cd811b2a'
 down_revision = None
 branch_labels = None
 depends_on = None
