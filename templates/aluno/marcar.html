@@ -6,29 +6,43 @@
 Marcar uma sessão de tutoria
 {% endblock %}
 
+
+
 {% block content %}
 <form action="{{ url_for('aluno_marcar') }}" method="POST" class="bg-white border-2 border-blue-900 rounded-[32px] p-8 shadow-md max-w-4xl">
     
-    <div class="mb-6">
-        <label class="block font-medium mb-2">Selecione a disciplina:</label>
-        <select id="id_disciplina" name="id_disciplina" onchange="filtrarSessoes()"
-                class="w-full px-4 py-3 rounded-full bg-gray-100 focus:outline-none">
-            <option value="">Selecione uma matéria</option>
-            {% for d in disciplinas %}
-                <option value="{{ d.id }}">{{ d.nome }}</option>
-            {% endfor %}
-        </select>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div>
+            <label class="block font-medium mb-2">Disciplina:</label>
+            <select id="filtro_disciplina" class="w-full px-4 py-3 rounded-full bg-gray-100">
+                <option value="">Todas as matérias</option>
+                {% for d in disciplinas %}
+                    <option value="{{ d.id }}">{{ d.nome }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <label class="block font-medium mb-2">Turno:</label>
+            <select id="filtro_turno" class="w-full px-4 py-3 rounded-full bg-gray-100">
+                <option value="">Todos os turnos</option>
+                <option value="Matutino">Matutino</option>
+                <option value="Vespertino">Vespertino</option>
+                <option value="Noturno">Noturno</option>
+            </select>
+        </div>
     </div>
 
-    <div id="sessao_container" class="hidden mt-6">
+    <button type="button" onclick="pesquisarSessoes()" class="mb-6 bg-blue-600 text-white px-6 py-2 rounded-full">
+        Pesquisar Tutoria
+    </button>
+
+    <div id="sessao_container" class="hidden">
         <h3 class="text-lg font-semibold text-blue-600 mb-4">Horários Disponíveis</h3>
-        <select id="id_sessao" name="id_sessao" 
-                class="w-full px-4 py-3 rounded-full bg-gray-100 mb-6">
-        </select>
+        <select id="id_sessao" name="id_sessao" class="w-full px-4 py-3 rounded-full bg-gray-100 mb-6 border border-blue-300">
+            </select>
 
         <div class="flex justify-end">
-            <button type="submit" class="px-8 py-3 rounded-full text-white font-semibold
-                           bg-gradient-to-r from-pink-600 to-blue-800">
+            <button type="submit" class="px-8 py-3 rounded-full text-white font-semibold bg-gradient-to-r from-pink-600 to-blue-800">
                 Confirmar Agendamento
             </button>
         </div>
@@ -36,27 +50,39 @@ Marcar uma sessão de tutoria
 </form>
 
 <script>
-    
     const sessoesBanco = JSON.parse('{{ sessoes_js | tojson | safe }}');
 
     function pesquisarSessoes() {
         const discId = document.getElementById("filtro_disciplina").value;
-        const container = document.getElementById("resultados_container");
+        const turno = document.getElementById("filtro_turno").value;
+        const selectSessao = document.getElementById("id_sessao");
+        const container = document.getElementById("sessao_container");
 
-        // Limpa o container com segurança
-        container.innerHTML = "";
+        // Limpa a lista anterior
+        selectSessao.innerHTML = "";
 
-        // Verificação para evitar erro de variável nula
-        if (!sessoesBanco || sessoesBanco.length === 0) {
-            container.innerHTML = "<p>Nenhuma sessão disponível.</p>";
-            return;
+        // Filtra as sessões baseadas na Disciplina E no Turno
+        const filtradas = sessoesBanco.filter(s => {
+            const bateDisciplina = !discId || s.disciplina_id == discId;
+            const bateTurno = !turno || s.turno === turno;
+            return bateDisciplina && bateTurno;
+        });
+
+        if (filtradas.length > 0) {
+            filtradas.forEach(s => {
+                const option = document.createElement("option");
+                option.value = s.id;
+                // Aqui usamos s.tutor_nome que definimos no Python
+                option.textContent = `${s.data} às ${s.horario} - Tutor: ${s.tutor_nome} (${s.turno})`;
+                selectSessao.appendChild(option);
+            });
+            container.classList.remove("hidden");
+        } else {
+            alert("Nenhuma sessão disponível para este filtro.");
+            container.classList.add("hidden");
         }
-
-        // Filtro
-        const filtradas = sessoesBanco.filter(s => !discId || s.disciplina_id == discId);
-        
-        // Renderização...
-        console.log("Sessões filtradas:", filtradas);
     }
 </script>
 {% endblock %}
+    
+ 
