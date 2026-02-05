@@ -6,50 +6,52 @@
 Marcar uma sessão de tutoria
 {% endblock %}
 
-
-
 {% block content %}
-<form action="{{ url_for('aluno_marcar') }}" method="POST" class="bg-white border-2 border-blue-900 rounded-[32px] p-8 shadow-md max-w-4xl">
-    
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        <div>
-            <label class="block font-medium mb-2">Disciplina:</label>
-            <select id="filtro_disciplina" class="w-full px-4 py-3 rounded-full bg-gray-100">
-                <option value="">Todas as matérias</option>
-                {% for d in disciplinas %}
-                    <option value="{{ d.id }}">{{ d.nome }}</option>
-                {% endfor %}
-            </select>
+<div class="container mx-auto p-4">
+    <form action="{{ url_for('aluno_marcar') }}" method="POST" class="bg-white border-2 border-blue-900 rounded-[32px] p-8 shadow-md max-w-4xl mx-auto">
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div>
+                <label class="block font-medium mb-2 text-gray-700">Disciplina:</label>
+                <select id="filtro_disciplina" class="w-full px-4 py-3 rounded-full bg-gray-50 border border-gray-200 focus:border-blue-500 outline-none">
+                    <option value="">Todas as matérias</option>
+                    {% for d in disciplinas %}
+                        <option value="{{ d.id }}">{{ d.nome }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label class="block font-medium mb-2 text-gray-700">Turno:</label>
+                <select id="filtro_turno" class="w-full px-4 py-3 rounded-full bg-gray-50 border border-gray-200 focus:border-blue-500 outline-none">
+                    <option value="">Todos os turnos</option>
+                    <option value="Matutino">Matutino</option>
+                    <option value="Vespertino">Vespertino</option>
+                    <option value="Noturno">Noturno</option>
+                </select>
+            </div>
         </div>
-        <div>
-            <label class="block font-medium mb-2">Turno:</label>
-            <select id="filtro_turno" class="w-full px-4 py-3 rounded-full bg-gray-100">
-                <option value="">Todos os turnos</option>
-                <option value="Matutino">Matutino</option>
-                <option value="Vespertino">Vespertino</option>
-                <option value="Noturno">Noturno</option>
-            </select>
+
+        <button type="button" onclick="pesquisarSessoes()" class="mb-8 bg-blue-600 hover:bg-blue-700 text-white font-bold px-8 py-3 rounded-full transition-all">
+            Pesquisar Tutoria
+        </button>
+
+        <div id="sessao_container" class="hidden border-t pt-6">
+            <h3 class="text-lg font-semibold text-blue-800 mb-4">Selecione o Horário Disponível:</h3>
+            
+            <select id="id_sessao" name="id_sessao" class="w-full px-4 py-3 rounded-full bg-blue-50 border-2 border-blue-200 mb-8 outline-none focus:border-blue-500">
+                </select>
+
+            <div class="flex justify-end">
+                <button type="submit" class="px-10 py-4 rounded-full text-white font-bold bg-gradient-to-r from-pink-600 to-blue-800 hover:scale-105 transition-transform shadow-lg">
+                    Confirmar Agendamento
+                </button>
+            </div>
         </div>
-    </div>
-
-    <button type="button" onclick="pesquisarSessoes()" class="mb-6 bg-blue-600 text-white px-6 py-2 rounded-full">
-        Pesquisar Tutoria
-    </button>
-
-    <div id="sessao_container" class="hidden">
-        <h3 class="text-lg font-semibold text-blue-600 mb-4">Horários Disponíveis</h3>
-        <select id="id_sessao" name="id_sessao" class="w-full px-4 py-3 rounded-full bg-gray-100 mb-6 border border-blue-300">
-            </select>
-
-        <div class="flex justify-end">
-            <button type="submit" class="px-8 py-3 rounded-full text-white font-semibold bg-gradient-to-r from-pink-600 to-blue-800">
-                Confirmar Agendamento
-            </button>
-        </div>
-    </div>
-</form>
+    </form>
+</div>
 
 <script>
+    // Recebe os dados do Python convertidos para JSON
     const sessoesBanco = JSON.parse('{{ sessoes_js | tojson | safe }}');
 
     function pesquisarSessoes() {
@@ -58,7 +60,7 @@ Marcar uma sessão de tutoria
         const selectSessao = document.getElementById("id_sessao");
         const container = document.getElementById("sessao_container");
 
-        // Limpa a lista anterior
+        // Limpa a lista anterior antes de filtrar
         selectSessao.innerHTML = "";
 
         // Filtra as sessões baseadas na Disciplina E no Turno
@@ -71,18 +73,16 @@ Marcar uma sessão de tutoria
         if (filtradas.length > 0) {
             filtradas.forEach(s => {
                 const option = document.createElement("option");
-                option.value = s.id;
-                // Aqui usamos s.tutor_nome que definimos no Python
-                option.textContent = `${s.data} às ${s.horario} - Tutor: ${s.tutor_nome} (${s.turno})`;
+                // Define o ID da sessão como o valor a ser enviado para o banco
+                option.value = s.id; 
+                option.textContent = `📅 ${s.data} às ${s.horario} - Tutor: ${s.tutor_nome}`;
                 selectSessao.appendChild(option);
             });
             container.classList.remove("hidden");
         } else {
-            alert("Nenhuma sessão disponível para este filtro.");
+            alert("Nenhuma sessão disponível para os filtros selecionados.");
             container.classList.add("hidden");
         }
     }
 </script>
 {% endblock %}
-    
- 

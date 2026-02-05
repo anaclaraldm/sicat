@@ -15,11 +15,9 @@
             <img src="" alt="">
             <nav>
                 <ul class="flex">
-                    <li>home</li>
-                    <li>login</li>
-                    <li>sobre</li>
-                    <li>funcionalidades</li>
-                    <li>acesso rápido</li>
+                    <li><a href="{{ url_for('index') }}">Home</a></li>
+                    <li><a href="{{ url_for('usuarios.cadastro') }}">Cadastro</a></li>
+                    <li><a href="{{ url_for('usuarios.login') }}">login</a></li>
                 </ul>
             </nav>
         </div>

@@ -54,91 +54,105 @@ def aluno_home():
 @app.route('/aluno/tutorias')
 @login_required
 def aluno_tutorias():
-    return render_template('aluno/tutorias.html',usuario=current_user)
+    # Sessões CONFIRMADAS (vínculo existe)
+    sql_confirmadas = db.text("""
+        SELECT s.*
+        FROM sessoes_tutoria s
+        JOIN aluno_sessao_tutoria ast
+            ON s.id = ast.sessao_tutoria_id
+        WHERE ast.aluno_id = :aluno
+    """)
+
+    tutorias_confirmadas = db.session.execute(
+        sql_confirmadas,
+        {'aluno': current_user.id}
+    ).fetchall()
+
+    return render_template(
+        'aluno/tutorias.html',
+        confirmadas=tutorias_confirmadas
+    )
 
 @app.route('/aluno/historico')
 @login_required
 def aluno_historico():
-    return render_template('aluno/historico.html',usuario=current_user)
+    return render_template('aluno/historico.html', usuario=current_user)
+
 
 @app.route('/aluno/perfil')
 @login_required
 def aluno_perfil():
     return render_template('aluno/perfil.html',usuario=current_user)
 
-
 @app.route('/aluno/marcar', methods=['GET', 'POST'])
 @login_required
 def aluno_marcar():
-    if request.method == 'GET':
-        disciplinas = Disciplina.query.all()
-        sessoes = SessaoTutoria.query.all()
+    if request.method == 'POST':
+        sessao_id = request.form.get('id_sessao')
         
-        sessoes_js = []
-        for s in sessoes:
-            tutor_obj = Tutor.query.get(s.tutor_id)
-            id_da_disciplina = tutor_obj.id_disciplina if tutor_obj else None
-            nome_tutor = tutor_obj.nome if tutor_obj else "Tutor não identificado"
-            turno_tutor = tutor_obj.turno if tutor_obj else "N/A"
+        if not sessao_id:
+            flash('Selecione uma sessão válida.')
+            return redirect(url_for('aluno_marcar'))
 
-            sessoes_js.append({
-                'id': s.id,
-                'disciplina_id': id_da_disciplina,
-                'turno': turno_tutor,
-                'data': s.data.strftime('%d/%m/%Y') if s.data else "Data a definir",
-                'horario': s.horario.strftime('%H:%M') if s.horario else "Horário a definir",
-                'tutor_nome': nome_tutor
-            })
-            
-        return render_template('aluno/marcar.html', disciplinas=disciplinas, sessoes_js=sessoes_js)
-
-    id_sessao = request.form.get('id_sessao')
-    
-    if id_sessao:
         try:
-            db.session.execute(db.text(
-                """
-                INSERT INTO aluno_sessao_tutoria (aluno_id, sessao_tutoria_id) 
-                VALUES (:a_id, :s_id)
-                """
-            ), {'a_id': current_user.id, 's_id': id_sessao})
+            db.session.execute(db.text("INSERT IGNORE INTO alunos (id) VALUES (:id)"), {'id': current_user.id})
+            
+            sql = db.text("INSERT INTO aluno_sessao_tutoria (aluno_id, sessao_tutoria_id) VALUES (:a, :s)")
+            db.session.execute(sql, {'a': current_user.id, 's': sessao_id})
             
             db.session.commit()
-            flash('Solicitação enviada! Agora o tutor precisa confirmar.')
-            print(f"DEBUG: Aluno {current_user.id} agendado na sessão {id_sessao}")
+            flash('Inscrição confirmada com sucesso!')
+            return redirect('/painel')
             
         except Exception as e:
             db.session.rollback()
-            print(f"Erro ao agendar: {e}")
-            flash('Você já solicitou agendamento para esta tutoria ou ocorreu um erro.')
+            print(f"ERRO DE GRAVAÇÃO: {e}") # Olhe o terminal do VS Code/Python
+            flash('Erro: Você já está inscrito ou a sessão é inválida.')
+            return redirect('/painel')
 
-    return redirect(url_for('aluno_tutorias'))
+    disciplinas = Disciplina.query.all()
+    sessoes_db = SessaoTutoria.query.all()
+
+    sessoes_lista = []
+    
+    for s in sessoes_db:
+        tutor_u = Usuario.query.get(s.tutor_id)
+        tutor_t = Tutor.query.get(s.tutor_id)
+        sessoes_lista.append({
+            'id': s.id,
+            'data': s.data.strftime('%d/%m/%Y') if s.data else '',
+            'horario': s.horario.strftime('%H:%M') if s.horario else '',
+            'tutor_nome': tutor_u.nome if tutor_u else 'Tutor',
+            'disciplina_id': tutor_t.id_disciplina if tutor_t else None,
+            'turno': tutor_t.turno if tutor_t else 'N/A'
+        })
+
+    return render_template('aluno/marcar.html', disciplinas=disciplinas, sessoes_js=sessoes_lista)
 
 
-@app.route('/tutor/decisao/<int:sessao_id>/<int:aluno_id>/<string:opcao>')
+@app.route('/tutor/decisao/<int:sessao_id>/<int:aluno_id>/<opcao>')
 @login_required
 def decisao_tutoria(sessao_id, aluno_id, opcao):
+    # Verifica se o usuário é tutor
     if current_user.funcao != 'tutor':
-        flash("Acesso restrito a tutores.")
+        flash('Acesso negado')
         return redirect('/painel')
 
-    if opcao == 'aceitar':
-        flash(f"Você aceitou a tutoria!")
-        
-    elif opcao == 'recusar':
+    if opcao == 'recusar':
         try:
-            # Também atualizado para sessao_tutoria_id
-            db.session.execute(db.text(
-                "DELETE FROM aluno_sessao_tutoria WHERE aluno_id = :a_id AND sessao_tutoria_id = :s_id"
-            ), {'a_id': aluno_id, 's_id': sessao_id})
+            sql = db.text("""
+                DELETE FROM aluno_sessao_tutoria 
+                WHERE aluno_id = :aluno_id AND sessao_tutoria_id = :sessao_id
+            """)
+            db.session.execute(sql, {'aluno_id': aluno_id, 'sessao_id': sessao_id})
             db.session.commit()
-            flash("Tutoria recusada. O registro foi removido.")
+            flash('Aluno removido da sessão com sucesso!')
         except Exception as e:
             db.session.rollback()
-            print(f"Erro ao recusar: {e}")
-            flash("Erro ao processar recusa.")
+            print(f"Erro ao deletar: {e}")
+            flash('Erro ao processar a remoção.')
 
-    return redirect(url_for('tutor_tutorias'))
+    return redirect(url_for('tutor_historico'))
 
 #---------------------------------------------------------
 
@@ -162,7 +176,50 @@ def servidor_perfil():
 @app.route('/servidor/tutorias')
 @login_required
 def servidor_tutorias():
-    return render_template('servidor/tutorias.html',usuario=current_user)
+
+    sessoes_db = SessaoTutoria.query.all()
+
+    lista_formatada = []
+
+    for s in sessoes_db:
+
+        sql_alunos = db.text("""
+            SELECT u.id, u.nome
+            FROM aluno_sessao_tutoria ast
+            JOIN alunos a ON a.id = ast.aluno_id
+            JOIN usuarios u ON u.id = a.id
+            WHERE ast.sessao_tutoria_id = :sid
+        """)
+
+        alunos_inscritos = db.session.execute(
+            sql_alunos,
+            {'sid': s.id}
+        ).fetchall()
+
+        sql_prof = db.text("""
+            SELECT u.nome
+            FROM professoresOrientadores po
+            JOIN professores p ON p.id = po.id
+            JOIN usuarios u ON u.id = p.id
+            WHERE po.id = :pid
+        """)
+
+        professor = db.session.execute(
+            sql_prof,
+            {'pid': s.professor_orientador_id}
+        ).fetchone()
+
+        lista_formatada.append({
+            'sessao': s,
+            'alunos': alunos_inscritos,
+            'professor_orientador': professor.nome if professor else 'Não informado'
+        })
+
+    return render_template(
+        'servidor/tutorias.html',
+        sessoes=lista_formatada
+    )
+
 
 
 @app.route('/servidor/comunicacao')
@@ -183,41 +240,37 @@ def tutor_home():
 def tutor_perfil():
     return render_template('tutor/perfil.html', usuario=current_user)
 
-@app.route('/tutor/tutorias')
+
+@app.route('/tutor/historico')
 @login_required
-def tutor_tutorias():
-    # 1. Pegamos as sessões criadas por este tutor
+def tutor_historico():
+    # 1. Busca as sessões que pertencem ao tutor logado
     sessoes_db = SessaoTutoria.query.filter_by(tutor_id=current_user.id).all()
     
     lista_formatada = []
     for s in sessoes_db:
-        # 2. Vamos buscar os IDs dos alunos que estão na tabela de ligação para esta sessão
-        alunos_ids = db.session.execute(db.text(
-            "SELECT aluno_id FROM aluno_sessao_tutoria WHERE sessao_tutoria_id = :s_id"
-        ), {'s_id': s.id}).fetchall()
+        # 2. Busca manual dos alunos vinculados via SQL JOIN
+        sql = db.text("""
+            SELECT u.id, u.nome 
+            FROM usuarios u
+            JOIN aluno_sessao_tutoria ast ON u.id = ast.aluno_id
+            WHERE ast.sessao_tutoria_id = :sid
+        """)
+        alunos_inscritos = db.session.execute(sql, {'sid': s.id}).fetchall()
         
-        lista_alunos = []
-        for row in alunos_ids:
-            aluno_obj = Usuario.query.get(row[0])
-            if aluno_obj:
-                lista_alunos.append(aluno_obj)
-
         lista_formatada.append({
             'sessao': s,
-            'alunos': lista_alunos
+            'alunos': alunos_inscritos
         })
 
-    return render_template('tutor/tutorias.html', sessoes=lista_formatada)
+    return render_template('tutor/historico.html', sessoes=lista_formatada)
+
 
 @app.route('/tutor/comunicacao')
 @login_required
 def tutor_comunicacao():
     return render_template('tutor/comunicacao.html', usuario=current_user)
 
-@app.route('/tutor/historico')
-@login_required
-def tutor_historico():
-    return render_template('tutor/historico.html', usuario=current_user)
 
 
 @app.route('/tutor/pendentes') 

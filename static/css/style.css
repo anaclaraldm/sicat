@@ -14,17 +14,20 @@ header{
 
 }
 
-nav ul li{
+nav ul li {
     font-family: "Open Sans";
     list-style: none;
+}
+nav ul li a{
     font-size: 12px;
     font-weight: 800;
     text-transform: uppercase;
+    color:white;
     padding: 10px 27px;
     margin-bottom: 24px;
+    text-decoration: none;
 }
-
-nav ul li:hover{
+nav ul li a:hover{
     background-color: white;
     color: #28001E;
     border-radius: 20px;
